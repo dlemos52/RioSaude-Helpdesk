@@ -72,24 +72,29 @@
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             text-align: left;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             background-color: #fff;
+        }
+
+        input[id*="Telefone"] {
+            font-size: 0.82rem;
+            letter-spacing: -0.5px;
         }
 
         .input-with-action {
@@ -101,9 +106,9 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px 16px;
+            padding: 10px 16px;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.3s;
@@ -118,6 +123,8 @@
             background-color: #0284c7;
             white-space: nowrap;
             width: auto;
+            font-size: 0.85rem;
+            padding: 8px 12px;
         }
 
         .credentials-hint {
@@ -146,6 +153,8 @@
             align-items: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: relative;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         header .logo-area {
@@ -176,6 +185,46 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Barra de Pesquisa Superior Direita */
+        .header-search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            padding: 3px 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header-search-box input {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 5px;
+            font-size: 0.85rem;
+            outline: none;
+            width: 170px;
+        }
+
+        .header-search-box input::placeholder {
+            color: #e2e8f0;
+        }
+
+        .header-search-box button {
+            background: var(--secondary-color);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .header-search-box button:hover {
+            background: #02659a;
         }
 
         .user-info {
@@ -210,14 +259,11 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             transition: background 0.2s;
         }
-        .modern-menu-toggle:active {
-            transform: scale(0.95);
-        }
 
         .mobile-dropdown-menu {
             display: none;
             position: absolute;
-            top: 70px;
+            top: 75px;
             right: 15px;
             background: white;
             width: 260px;
@@ -226,12 +272,6 @@
             z-index: 1100;
             overflow: hidden;
             border: 1px solid var(--border-color);
-            animation: fadeInMenu 0.2s ease-in-out;
-        }
-
-        @keyframes fadeInMenu {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .mobile-dropdown-menu button {
@@ -246,12 +286,12 @@
             cursor: pointer;
             font-weight: 500;
         }
-        .mobile-dropdown-menu button:hover, .mobile-dropdown-menu button:active {
+        .mobile-dropdown-menu button:hover {
             background-color: var(--accent-color);
             color: var(--primary-color);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .modern-menu-toggle {
                 display: flex;
             }
@@ -291,24 +331,53 @@
             margin-bottom: 10px;
         }
 
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .kpi-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .kpi-card h5 {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .kpi-card .kpi-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
         .table-responsive {
             width: 100%;
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
             margin-top: 15px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 600px;
+            min-width: 700px;
         }
 
         table th, table td {
             padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            vertical-align: middle;
         }
 
         table th {
@@ -319,7 +388,7 @@
         .badge {
             padding: 4px 8px;
             border-radius: 12px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: bold;
             color: white;
             display: inline-block;
@@ -339,24 +408,30 @@
 
         .grid-2 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
         }
 
         .grid-3 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .inline-fields-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
         .satisfaction-options button {
             background: none;
             border: 2px solid var(--border-color);
-            padding: 6px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 1.1rem;
-            margin-right: 5px;
+            font-size: 1rem;
+            margin-right: 4px;
             transition: all 0.2s;
         }
 
@@ -365,6 +440,7 @@
             background: #f0fdf4;
         }
 
+        /* Modais */
         #toast-modal {
             display: none;
             position: fixed;
@@ -374,12 +450,6 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            animation: fadeInToast 0.2s ease-out;
-        }
-
-        @keyframes fadeInToast {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .toast-card {
@@ -427,7 +497,7 @@
 </head>
 <body>
 
-    <!-- MODAL DE MENSAGEM ELEGANTE AO CENTRO (TOAST / ALERTA) -->
+    <!-- MODAL DE MENSAGEM -->
     <div id="toast-modal">
         <div class="toast-card">
             <h3 id="toast-title">Sucesso!</h3>
@@ -466,7 +536,7 @@
                     <button type="submit" class="btn" style="width: 100%;">Entrar</button>
                     <div class="credentials-hint">
                         <strong>Acessos de Teste (Senha: 123):</strong><br>
-                        • <code>admin</code> (Acesso Total)<br>
+                        • <code>admin</code> (Acesso Total + Dashboard)<br>
                         • <code>tecnico</code> (Chamados, Cadastros e Inventário)<br>
                         • <code>funcionario</code> (Abertura e Consulta)
                     </div>
@@ -485,6 +555,12 @@
                     </div>
                 </div>
                 <div class="header-actions">
+                    <!-- CAMPO DE PESQUISA GLOBAL (LUPA) -->
+                    <div class="header-search-box">
+                        <input type="text" id="globalSearchInput" placeholder="Nome ou Nº Chamado..." onkeydown="if(event.key === 'Enter') executarBuscaGlobal()">
+                        <button type="button" onclick="executarBuscaGlobal()" title="Pesquisar Chamado">🔍</button>
+                    </div>
+
                     <div class="user-info">
                         <span id="user-display">Perfil: Admin</span>
                         <button class="logout-btn" onclick="realizarLogout()">Sair</button>
@@ -493,17 +569,42 @@
                         ☰
                     </button>
                     <div id="dropdownMenuMobile" class="mobile-dropdown-menu">
-                        <!-- Preenchido dinamicamente via JS com base no perfil -->
+                        <!-- Preenchido dinamicamente via JS -->
                     </div>
                 </div>
             </header>
 
             <div class="container">
                 
-                <!-- PAINEL ADMINISTRADOR -->
-                <div id="panel-admin" class="panel-section card">
-                    <h3>Painel Administrativo - Visão Global</h3>
-                    <p>Bem-vindo, Administrador. Acesso irrestrito a todas as ferramentas de gestão, inventário e controle de unidades.</p>
+                <!-- DASHBOARD ADMINISTRATIVO -->
+                <div id="panel-admin" class="panel-section card" style="display:none;">
+                    <h3>Dashboard Administrativo - Visão Global</h3>
+                    <div class="dashboard-grid">
+                        <div class="kpi-card">
+                            <h5>Funcionários</h5>
+                            <div class="kpi-value" id="kpi-total-funcionarios">0</div>
+                        </div>
+                        <div class="kpi-card">
+                            <h5>Total Unidades</h5>
+                            <div class="kpi-value" id="kpi-total-unidades">0</div>
+                        </div>
+                        <div class="kpi-card" style="border-left-color: var(--danger);">
+                            <h5>Abertos</h5>
+                            <div class="kpi-value" id="kpi-chamados-abertos">0</div>
+                        </div>
+                        <div class="kpi-card" style="border-left-color: var(--warning);">
+                            <h5>Em Andamento</h5>
+                            <div class="kpi-value" id="kpi-chamados-andamento">0</div>
+                        </div>
+                        <div class="kpi-card" style="border-left-color: var(--success);">
+                            <h5>Fechados</h5>
+                            <div class="kpi-value" id="kpi-chamados-fechados">0</div>
+                        </div>
+                        <div class="kpi-card" style="border-left-color: #8b5cf6;">
+                            <h5>Satisfação (😊 / 😞)</h5>
+                            <div class="kpi-value" id="kpi-satisfacao">0%</div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- PAINEL TÉCNICO -->
@@ -518,7 +619,7 @@
                     <p>Abra chamados para suporte em sua unidade e acompanhe o status em tempo real.</p>
                 </div>
 
-                <!-- MÓDULO: CADASTRO DE INVENTÁRIO (Admin e Técnico) -->
+                <!-- MÓDULO: CADASTRO DE INVENTÁRIO -->
                 <div id="modulo-inventario" class="card">
                     <h3>Cadastro de Inventário de Equipamentos</h3>
                     <form id="formInventario" onsubmit="cadastrarInventario(event)">
@@ -529,7 +630,7 @@
                                     <option value="">Selecione...</option>
                                     <option value="Desktop">Desktop</option>
                                     <option value="Notebook">Notebook</option>
-                                    <option value="Impressoora">Impressora</option>
+                                    <option value="Impressora">Impressora</option>
                                     <option value="Monitor">Monitor</option>
                                     <option value="Teclado">Teclado</option>
                                     <option value="Mouse">Mouse</option>
@@ -538,14 +639,14 @@
                             <div class="form-group">
                                 <label>Marca</label>
                                 <select id="invMarca" required>
-                                    <option value="">Selecione o equipamento primeiro</option>
+                                    <option value="">Selecione primeiro</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Setor</label>
                                 <select id="invSetor" required>
-                                    <option value="">Selecione o Setor</option>
-                                    <option value="Recepção da Emergência">Recepção da Emergência</option>
+                                    <option value="">Setor</option>
+                                    <option value="Recepção da Emergência">Recepção Emergência</option>
                                     <option value="NIR">NIR</option>
                                     <option value="Diretoria">Diretoria</option>
                                     <option value="Cegonha">Cegonha</option>
@@ -563,31 +664,31 @@
                         </div>
                         <div class="grid-3">
                             <div class="form-group">
-                                <label>Nº Patrimônio (Máx. 4 dígitos)</label>
+                                <label>Nº Patrimônio (Máx. 4)</label>
                                 <div class="input-with-action">
                                     <input type="text" id="invPatrimonio" maxlength="4" required placeholder="Ex: A123">
-                                    <button type="button" class="btn btn-scan" onclick="iniciarScanner('invPatrimonio')" title="Ler com Câmera">📷 Câmera</button>
+                                    <button type="button" class="btn btn-scan" onclick="iniciarScanner('invPatrimonio')" title="Câmera">📷 Câmera</button>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Nº Serial (Máx. 5 dígitos)</label>
+                                <label>Nº Serial (Máx. 5)</label>
                                 <div class="input-with-action">
                                     <input type="text" id="invSerial" maxlength="5" required placeholder="Ex: B7890">
-                                    <button type="button" class="btn btn-scan" onclick="iniciarScanner('invSerial')" title="Ler com Câmera">📷 Câmera</button>
+                                    <button type="button" class="btn btn-scan" onclick="iniciarScanner('invSerial')" title="Câmera">📷 Câmera</button>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>Telefone</label>
-                                <input type="text" id="invTelefone" required placeholder="(21) 99999-9999">
+                            <div class="inline-fields-row">
+                                <div class="form-group">
+                                    <label>Responsável</label>
+                                    <input type="text" id="invResponsavel" required placeholder="Nome">
+                                </div>
+                                <div class="form-group">
+                                    <label>Telefone</label>
+                                    <input type="text" id="invTelefone" required placeholder="(21) 99999-9999">
+                                </div>
                             </div>
                         </div>
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Responsável</label>
-                                <input type="text" id="invResponsavel" required placeholder="Nome do responsável">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn" style="width: auto; padding: 12px 24px;">Cadastrar no Inventário</button>
+                        <button type="submit" class="btn" style="width: auto; padding: 10px 20px; margin-top: 5px;">Cadastrar no Inventário</button>
                     </form>
                     <div class="table-responsive">
                         <h4 style="margin-top: 15px;">Equipamentos no Inventário</h4>
@@ -610,7 +711,7 @@
                     </div>
                 </div>
 
-                <!-- MÓDULO: CADASTRO DE FUNCIONÁRIOS (Admin e Técnico) -->
+                <!-- MÓDULO: CADASTRO DE FUNCIONÁRIOS -->
                 <div id="modulo-cadastro" class="card">
                     <h3>Cadastro de Funcionários / Colaboradores</h3>
                     <form id="formFuncionario" onsubmit="cadastrarFuncionario(event)">
@@ -620,45 +721,47 @@
                                 <input type="text" id="funcNome" required placeholder="Ex: Dr. Carlos Silva">
                             </div>
                             <div class="form-group">
-                                <label>Unidade de Saúde (Hospital/Maternidade/UPA)</label>
+                                <label>Unidade de Saúde</label>
                                 <select id="funcUnidade" required>
-                                    <option value="">Selecione a unidade...</option>
-                                    <optgroup label="Hospitais Municipais e Estaduais">
-                                        <option value="Hospital Municipal Souza Aguiar">Hospital Municipal Souza Aguiar</option>
-                                        <option value="Hospital Municipal Salgado Filho">Hospital Municipal Salgado Filho</option>
-                                        <option value="Hospital Municipal Miguel Couto">Hospital Municipal Miguel Couto</option>
-                                        <option value="Hospital Municipal Lourenço Jorge">Hospital Municipal Lourenço Jorge</option>
-                                        <option value="Hospital Municipal Pedro II">Hospital Municipal Pedro II</option>
-                                        <option value="Hospital Municipal Evandro Freire">Hospital Municipal Evandro Freire</option>
-                                        <option value="Hospital Municipal Albert Schweitzer">Hospital Municipal Albert Schweitzer</option>
-                                        <option value="Hospital Municipal Rocha Faria">Hospital Municipal Rocha Faria</option>
-                                        <option value="Hospital Municipal Rocha Maia">Hospital Municipal Rocha Maia</option>
-                                        <option value="Hospital Municipal Francisco da Silva Telles">Hospital Municipal Francisco da Silva Telles</option>
-                                        <option value="Hospital Estadual Getúlio Vargas">Hospital Estadual Getúlio Vargas</option>
-                                        <option value="Hospital Estadual Carlos Chagas">Hospital Estadual Carlos Chagas</option>
-                                        <option value="Hospital Estadual Anchieta">Hospital Estadual Anchieta</option>
+                                    <option value="">Selecione...</option>
+                                    <optgroup label="Hospitais Municipais (HM)">
+                                        <option value="HM Souza Aguiar">HM Souza Aguiar</option>
+                                        <option value="HM Salgado Filho">HM Salgado Filho</option>
+                                        <option value="HM Miguel Couto">HM Miguel Couto</option>
+                                        <option value="HM Lourenço Jorge">HM Lourenço Jorge</option>
+                                        <option value="HM Pedro II">HM Pedro II</option>
+                                        <option value="HM Evandro Freire">HM Evandro Freire</option>
+                                        <option value="HM Albert Schweitzer">HM Albert Schweitzer</option>
+                                        <option value="HM Rocha Faria">HM Rocha Faria</option>
+                                        <option value="HM Rocha Maia">HM Rocha Maia</option>
+                                        <option value="HM Francisco da Silva Telles">HM Francisco da Silva Telles</option>
                                     </optgroup>
-                                    <optgroup label="Maternidades e Casas de Parto">
-                                        <option value="Hospital Municipal Leila Diniz">Hospital Municipal Leila Diniz</option>
-                                        <option value="Hospital Maternidade Herculano Pinheiro">Hospital Maternidade Herculano Pinheiro</option>
-                                        <option value="Hospital Maternidade Fernando Magalhães">Hospital Maternidade Fernando Magalhães</option>
-                                        <option value="Hospital Maternidade Alexander Fleming">Hospital Maternidade Alexander Fleming</option>
-                                        <option value="Hospital Maternidade Carmela Dutra">Hospital Maternidade Carmela Dutra</option>
-                                        <option value="Hospital Maternidade Maria Amélia Buarque de Hollanda">Hospital Maternidade Maria Amélia Buarque de Hollanda</option>
-                                        <option value="Maternidade Municipal do Rocha Faria">Maternidade Municipal do Rocha Faria</option>
-                                        <option value="Maternidade Municipal do Pedro II">Maternidade Municipal do Pedro II</option>
-                                        <option value="Maternidade Municipal do Lourenço Jorge">Maternidade Municipal do Lourenço Jorge</option>
-                                        <option value="Maternidade Municipal do Albert Schweitzer">Maternidade Municipal do Albert Schweitzer</option>
-                                        <option value="Maternidade Municipal da Ilha do Governador">Maternidade Municipal da Ilha do Governador</option>
-                                        <option value="Hospital Maternidade Bangu">Hospital Maternidade Bangu</option>
-                                        <option value="Casa de Parto David Capistrano da Costa Filho">Casa de Parto David Capistrano da Costa Filho</option>
+                                    <optgroup label="Hospitais Estaduais / Federais (HE)">
+                                        <option value="HE Getúlio Vargas">HE Getúlio Vargas</option>
+                                        <option value="HE Carlos Chagas">HE Carlos Chagas</option>
+                                        <option value="HE Anchieta">HE Anchieta</option>
                                     </optgroup>
-                                    <optgroup label="Unidades de Pronto Atendimento (UPAs 24h)">
+                                    <optgroup label="Maternidades">
+                                        <option value="HM Leila Diniz">HM Leila Diniz</option>
+                                        <option value="H Maternidade Herculano Pinheiro">HM Herculano Pinheiro</option>
+                                        <option value="H Maternidade Fernando Magalhães">HM Fernando Magalhães</option>
+                                        <option value="H Maternidade Alexander Fleming">HM Alexander Fleming</option>
+                                        <option value="H Maternidade Carmela Dutra">HM Carmela Dutra</option>
+                                        <option value="H Maternidade Maria Amélia">HM Maria Amélia</option>
+                                        <option value="Maternidade Municipal Rocha Faria">Mat. Mun. Rocha Faria</option>
+                                        <option value="Maternidade Municipal Pedro II">Mat. Mun. Pedro II</option>
+                                        <option value="Maternidade Municipal Lourenço Jorge">Mat. Mun. Lourenço Jorge</option>
+                                        <option value="Maternidade Municipal Albert Schweitzer">Mat. Mun. Albert Schweitzer</option>
+                                        <option value="Maternidade Municipal Ilha do Governador">Mat. Mun. Ilha do Gov.</option>
+                                        <option value="H Maternidade Bangu">HM Bangu</option>
+                                        <option value="Casa de Parto David Capistrano">CP David Capistrano</option>
+                                    </optgroup>
+                                    <optgroup label="UPAs 24h">
                                         <option value="UPA Rocinha">UPA Rocinha</option>
                                         <option value="UPA Alemão">UPA Alemão</option>
                                         <option value="UPA Manguinhos">UPA Manguinhos</option>
-                                        <option value="UPA Del Castilho / Inhaúma">UPA Del Castilho / Inhaúma</option>
-                                        <option value="UPA Engenho de Dentro">UPA Engenho de Dentro</option>
+                                        <option value="UPA Del Castilho / Inhaúma">UPA Del Castilho</option>
+                                        <option value="UPA Engenho de Dentro">UPA Eng. de Dentro</option>
                                         <option value="UPA Madureira">UPA Madureira</option>
                                         <option value="UPA Costa Barros">UPA Costa Barros</option>
                                         <option value="UPA Rocha Miranda">UPA Rocha Miranda</option>
@@ -667,30 +770,30 @@
                                         <option value="UPA Senador Camará">UPA Senador Camará</option>
                                         <option value="UPA Magalhães Bastos">UPA Magalhães Bastos</option>
                                         <option value="UPA Sepetiba">UPA Sepetiba</option>
-                                        <option value="UPA Santa Cruz (João XXIII)">UPA Santa Cruz (João XXIII)</option>
-                                        <option value="UPA Paciência (Jardim 7 de Abril)">UPA Paciência (Jardim 7 de Abril)</option>
-                                        <option value="UPA Bangu (Estadual)">UPA Bangu (Estadual)</option>
-                                        <option value="UPA Botafogo (Estadual)">UPA Botafogo (Estadual)</option>
-                                        <option value="UPA Campo Grande I e II (Estadual)">UPA Campo Grande I e II (Estadual)</option>
-                                        <option value="UPA Copacabana (Estadual)">UPA Copacabana (Estadual)</option>
-                                        <option value="UPA Engenho Novo (Estadual)">UPA Engenho Novo (Estadual)</option>
-                                        <option value="UPA Ilha do Governador (Estadual)">UPA Ilha do Governador (Estadual)</option>
-                                        <option value="UPA Irajá (Estadual)">UPA Irajá (Estadual)</option>
-                                        <option value="UPA Jacarepaguá (Estadual)">UPA Jacarepaguá (Estadual)</option>
-                                        <option value="UPA Maré / Vila do João (Estadual)">UPA Maré / Vila do João (Estadual)</option>
-                                        <option value="UPA Marechal Hermes (Estadual)">UPA Marechal Hermes (Estadual)</option>
-                                        <option value="UPA Penha (Estadual)">UPA Penha (Estadual)</option>
-                                        <option value="UPA Realengo (Estadual)">UPA Realengo (Estadual)</option>
-                                        <option value="UPA Ricardo de Albuquerque (Estadual)">UPA Ricardo de Albuquerque (Estadual)</option>
-                                        <option value="UPA Tijuca (Estadual)">UPA Tijuca (Estadual)</option>
+                                        <option value="UPA Santa Cruz (João XXIII)">UPA Santa Cruz</option>
+                                        <option value="UPA Paciência">UPA Paciência</option>
+                                        <option value="UPA Bangu (Estadual)">UPA Bangu (Est.)</option>
+                                        <option value="UPA Botafogo (Estadual)">UPA Botafogo (Est.)</option>
+                                        <option value="UPA Campo Grande (Estadual)">UPA Campo Grande (Est.)</option>
+                                        <option value="UPA Copacabana (Estadual)">UPA Copacabana (Est.)</option>
+                                        <option value="UPA Engenho Novo (Estadual)">UPA Engenho Novo (Est.)</option>
+                                        <option value="UPA Ilha do Governador (Estadual)">UPA Ilha do Gov. (Est.)</option>
+                                        <option value="UPA Irajá (Estadual)">UPA Irajá (Est.)</option>
+                                        <option value="UPA Jacarepaguá (Estadual)">UPA Jacarepaguá (Est.)</option>
+                                        <option value="UPA Maré / Vila do João">UPA Maré</option>
+                                        <option value="UPA Marechal Hermes">UPA Mal. Hermes</option>
+                                        <option value="UPA Penha">UPA Penha</option>
+                                        <option value="UPA Realengo">UPA Realengo</option>
+                                        <option value="UPA Ricardo de Albuquerque">UPA Ricardo de Albuq.</option>
+                                        <option value="UPA Tijuca">UPA Tijuca</option>
                                     </optgroup>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Setor</label>
                                 <select id="funcSetor" required>
-                                    <option value="">Selecione o Setor</option>
-                                    <option value="Recepção da Emergência">Recepção da Emergência</option>
+                                    <option value="">Setor</option>
+                                    <option value="Recepção da Emergência">Recepção Emergência</option>
                                     <option value="NIR">NIR</option>
                                     <option value="Diretoria">Diretoria</option>
                                     <option value="Cegonha">Cegonha</option>
@@ -712,7 +815,7 @@
                                 <input type="text" id="funcTelefone" required placeholder="(21) 99999-9999">
                             </div>
                         </div>
-                        <button type="submit" class="btn" style="width: auto; padding: 12px 24px;">Cadastrar Funcionário</button>
+                        <button type="submit" class="btn" style="width: auto; padding: 10px 20px; margin-top: 5px;">Cadastrar Funcionário</button>
                     </form>
                     <div class="table-responsive">
                         <h4 style="margin-top: 15px;">Funcionários Cadastrados</h4>
@@ -732,20 +835,21 @@
                     </div>
                 </div>
 
-                <!-- MÓDULO: ABERTURA DE CHAMADOS (Atualizado com Nome, Setor e Telefone) -->
+                <!-- MÓDULO: ABERTURA DE CHAMADOS (FORMULÁRIO DO FUNCIONÁRIO) -->
                 <div id="modulo-abertura" class="card">
-                    <h3>Abrir Novo Chamado de Suporte</h3>
-                    <form id="formChamado" onsubmit="abrirChamado(event)">
+                    <h3 id="titulo-form-chamado">Abrir Novo Chamado de Suporte</h3>
+                    <form id="formChamado" onsubmit="salvarChamadoOuSolucao(event)">
+                        <input type="hidden" id="chamadoEditId" value="">
                         <div class="grid-3">
                             <div class="form-group">
                                 <label>Nome do Solicitante</label>
-                                <input type="text" id="chamadoNome" required placeholder="Seu nome completo">
+                                <input type="text" id="chamadoNome" required placeholder="Nome completo cadastrado">
                             </div>
                             <div class="form-group">
                                 <label>Setor</label>
                                 <select id="chamadoSetor" required>
-                                    <option value="">Selecione o Setor</option>
-                                    <option value="Recepção da Emergência">Recepção da Emergência</option>
+                                    <option value="">Setor</option>
+                                    <option value="Recepção da Emergência">Recepção Emergência</option>
                                     <option value="NIR">NIR</option>
                                     <option value="Diretoria">Diretoria</option>
                                     <option value="Cegonha">Cegonha</option>
@@ -760,79 +864,83 @@
                                     <option value="Ambulatório">Ambulatório</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label>Telefone de Contato</label>
-                                <input type="text" id="chamadoTelefone" required placeholder="(21) 99999-9999">
+                            <div class="inline-fields-row">
+                                <div class="form-group">
+                                    <label>Unidade</label>
+                                    <select id="chamadoUnidade" required>
+                                        <option value="">Selecione...</option>
+                                        <optgroup label="Hospitais Municipais (HM)">
+                                            <option value="HM Souza Aguiar">HM Souza Aguiar</option>
+                                            <option value="HM Salgado Filho">HM Salgado Filho</option>
+                                            <option value="HM Miguel Couto">HM Miguel Couto</option>
+                                            <option value="HM Lourenço Jorge">HM Lourenço Jorge</option>
+                                            <option value="HM Pedro II">HM Pedro II</option>
+                                            <option value="HM Evandro Freire">HM Evandro Freire</option>
+                                            <option value="HM Albert Schweitzer">HM Albert Schweitzer</option>
+                                            <option value="HM Rocha Faria">HM Rocha Faria</option>
+                                            <option value="HM Rocha Maia">HM Rocha Maia</option>
+                                            <option value="HM Francisco da Silva Telles">HM Francisco da Silva Telles</option>
+                                        </optgroup>
+                                        <optgroup label="Hospitais Estaduais / Federais (HE)">
+                                            <option value="HE Getúlio Vargas">HE Getúlio Vargas</option>
+                                            <option value="HE Carlos Chagas">HE Carlos Chagas</option>
+                                            <option value="HE Anchieta">HE Anchieta</option>
+                                        </optgroup>
+                                        <optgroup label="Maternidades">
+                                            <option value="HM Leila Diniz">HM Leila Diniz</option>
+                                            <option value="H Maternidade Herculano Pinheiro">HM Herculano Pinheiro</option>
+                                            <option value="H Maternidade Fernando Magalhães">HM Fernando Magalhães</option>
+                                            <option value="H Maternidade Alexander Fleming">HM Alexander Fleming</option>
+                                            <option value="H Maternidade Carmela Dutra">HM Carmela Dutra</option>
+                                            <option value="H Maternidade Maria Amélia">HM Maria Amélia</option>
+                                            <option value="Maternidade Municipal Rocha Faria">Mat. Mun. Rocha Faria</option>
+                                            <option value="Maternidade Municipal Pedro II">Mat. Mun. Pedro II</option>
+                                            <option value="Maternidade Municipal Lourenço Jorge">Mat. Mun. Lourenço Jorge</option>
+                                            <option value="Maternidade Municipal Albert Schweitzer">Mat. Mun. Albert Schweitzer</option>
+                                            <option value="Maternidade Municipal Ilha do Governador">Mat. Mun. Ilha do Gov.</option>
+                                            <option value="H Maternidade Bangu">HM Bangu</option>
+                                            <option value="Casa de Parto David Capistrano">CP David Capistrano</option>
+                                        </optgroup>
+                                        <optgroup label="UPAs 24h">
+                                            <option value="UPA Rocinha">UPA Rocinha</option>
+                                            <option value="UPA Alemão">UPA Alemão</option>
+                                            <option value="UPA Manguinhos">UPA Manguinhos</option>
+                                            <option value="UPA Del Castilho / Inhaúma">UPA Del Castilho</option>
+                                            <option value="UPA Engenho de Dentro">UPA Eng. de Dentro</option>
+                                            <option value="UPA Madureira">UPA Madureira</option>
+                                            <option value="UPA Costa Barros">UPA Costa Barros</option>
+                                            <option value="UPA Rocha Miranda">UPA Rocha Miranda</option>
+                                            <option value="UPA Cidade de Deus">UPA Cidade de Deus</option>
+                                            <option value="UPA Vila Kennedy">UPA Vila Kennedy</option>
+                                            <option value="UPA Senador Camará">UPA Senador Camará</option>
+                                            <option value="UPA Magalhães Bastos">UPA Magalhães Bastos</option>
+                                            <option value="UPA Sepetiba">UPA Sepetiba</option>
+                                            <option value="UPA Santa Cruz (João XXIII)">UPA Santa Cruz</option>
+                                            <option value="UPA Paciência">UPA Paciência</option>
+                                            <option value="UPA Bangu (Estadual)">UPA Bangu (Est.)</option>
+                                            <option value="UPA Botafogo (Estadual)">UPA Botafogo (Est.)</option>
+                                            <option value="UPA Campo Grande (Estadual)">UPA Campo Grande (Est.)</option>
+                                            <option value="UPA Copacabana (Estadual)">UPA Copacabana (Est.)</option>
+                                            <option value="UPA Engenho Novo (Estadual)">UPA Engenho Novo (Est.)</option>
+                                            <option value="UPA Ilha do Governador (Estadual)">UPA Ilha do Gov. (Est.)</option>
+                                            <option value="UPA Irajá (Estadual)">UPA Irajá (Est.)</option>
+                                            <option value="UPA Jacarepaguá (Estadual)">UPA Jacarepaguá (Est.)</option>
+                                            <option value="UPA Maré / Vila do João">UPA Maré</option>
+                                            <option value="UPA Marechal Hermes">UPA Mal. Hermes</option>
+                                            <option value="UPA Penha">UPA Penha</option>
+                                            <option value="UPA Realengo">UPA Realengo</option>
+                                            <option value="UPA Ricardo de Albuquerque">UPA Ricardo de Albuq.</option>
+                                            <option value="UPA Tijuca">UPA Tijuca</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Telefone</label>
+                                    <input type="text" id="chamadoTelefone" required placeholder="(21) 99999-9999">
+                                </div>
                             </div>
                         </div>
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Selecione Hospital, Maternidade ou UPA</label>
-                                <select id="chamadoUnidade" required>
-                                    <option value="">Selecione a unidade...</option>
-                                    <optgroup label="Hospitais Municipais e Estaduais">
-                                        <option value="Hospital Municipal Souza Aguiar">Hospital Municipal Souza Aguiar</option>
-                                        <option value="Hospital Municipal Salgado Filho">Hospital Municipal Salgado Filho</option>
-                                        <option value="Hospital Municipal Miguel Couto">Hospital Municipal Miguel Couto</option>
-                                        <option value="Hospital Municipal Lourenço Jorge">Hospital Municipal Lourenço Jorge</option>
-                                        <option value="Hospital Municipal Pedro II">Hospital Municipal Pedro II</option>
-                                        <option value="Hospital Municipal Evandro Freire">Hospital Municipal Evandro Freire</option>
-                                        <option value="Hospital Municipal Albert Schweitzer">Hospital Municipal Albert Schweitzer</option>
-                                        <option value="Hospital Municipal Rocha Faria">Hospital Municipal Rocha Faria</option>
-                                        <option value="Hospital Municipal Rocha Maia">Hospital Municipal Rocha Maia</option>
-                                        <option value="Hospital Municipal Francisco da Silva Telles">Hospital Municipal Francisco da Silva Telles</option>
-                                        <option value="Hospital Estadual Getúlio Vargas">Hospital Estadual Getúlio Vargas</option>
-                                        <option value="Hospital Estadual Carlos Chagas">Hospital Estadual Carlos Chagas</option>
-                                        <option value="Hospital Estadual Anchieta">Hospital Estadual Anchieta</option>
-                                    </optgroup>
-                                    <optgroup label="Maternidades e Casas de Parto">
-                                        <option value="Hospital Municipal Leila Diniz">Hospital Municipal Leila Diniz</option>
-                                        <option value="Hospital Maternidade Herculano Pinheiro">Hospital Maternidade Herculano Pinheiro</option>
-                                        <option value="Hospital Maternidade Fernando Magalhães">Hospital Maternidade Fernando Magalhães</option>
-                                        <option value="Hospital Maternidade Alexander Fleming">Hospital Maternidade Alexander Fleming</option>
-                                        <option value="Hospital Maternidade Carmela Dutra">Hospital Maternidade Carmela Dutra</option>
-                                        <option value="Hospital Maternidade Maria Amélia Buarque de Hollanda">Hospital Maternidade Maria Amélia Buarque de Hollanda</option>
-                                        <option value="Maternidade Municipal do Rocha Faria">Maternidade Municipal do Rocha Faria</option>
-                                        <option value="Maternidade Municipal do Pedro II">Maternidade Municipal do Pedro II</option>
-                                        <option value="Maternidade Municipal do Lourenço Jorge">Maternidade Municipal do Lourenço Jorge</option>
-                                        <option value="Maternidade Municipal do Albert Schweitzer">Maternidade Municipal do Albert Schweitzer</option>
-                                        <option value="Maternidade Municipal da Ilha do Governador">Maternidade Municipal da Ilha do Governador</option>
-                                        <option value="Hospital Maternidade Bangu">Hospital Maternidade Bangu</option>
-                                        <option value="Casa de Parto David Capistrano da Costa Filho">Casa de Parto David Capistrano da Costa Filho</option>
-                                    </optgroup>
-                                    <optgroup label="Unidades de Pronto Atendimento (UPAs 24h)">
-                                        <option value="UPA Rocinha">UPA Rocinha</option>
-                                        <option value="UPA Alemão">UPA Alemão</option>
-                                        <option value="UPA Manguinhos">UPA Manguinhos</option>
-                                        <option value="UPA Del Castilho / Inhaúma">UPA Del Castilho / Inhaúma</option>
-                                        <option value="UPA Engenho de Dentro">UPA Engenho de Dentro</option>
-                                        <option value="UPA Madureira">UPA Madureira</option>
-                                        <option value="UPA Costa Barros">UPA Costa Barros</option>
-                                        <option value="UPA Rocha Miranda">UPA Rocha Miranda</option>
-                                        <option value="UPA Cidade de Deus">UPA Cidade de Deus</option>
-                                        <option value="UPA Vila Kennedy">UPA Vila Kennedy</option>
-                                        <option value="UPA Senador Camará">UPA Senador Camará</option>
-                                        <option value="UPA Magalhães Bastos">UPA Magalhães Bastos</option>
-                                        <option value="UPA Sepetiba">UPA Sepetiba</option>
-                                        <option value="UPA Santa Cruz (João XXIII)">UPA Santa Cruz (João XXIII)</option>
-                                        <option value="UPA Paciência (Jardim 7 de Abril)">UPA Paciência (Jardim 7 de Abril)</option>
-                                        <option value="UPA Bangu (Estadual)">UPA Bangu (Estadual)</option>
-                                        <option value="UPA Botafogo (Estadual)">UPA Botafogo (Estadual)</option>
-                                        <option value="UPA Campo Grande I e II (Estadual)">UPA Campo Grande I e II (Estadual)</option>
-                                        <option value="UPA Copacabana (Estadual)">UPA Copacabana (Estadual)</option>
-                                        <option value="UPA Engenho Novo (Estadual)">UPA Engenho Novo (Estadual)</option>
-                                        <option value="UPA Ilha do Governador (Estadual)">UPA Ilha do Governador (Estadual)</option>
-                                        <option value="UPA Irajá (Estadual)">UPA Irajá (Estadual)</option>
-                                        <option value="UPA Jacarepaguá (Estadual)">UPA Jacarepaguá (Estadual)</option>
-                                        <option value="UPA Maré / Vila do João (Estadual)">UPA Maré / Vila do João (Estadual)</option>
-                                        <option value="UPA Marechal Hermes (Estadual)">UPA Marechal Hermes (Estadual)</option>
-                                        <option value="UPA Penha (Estadual)">UPA Penha (Estadual)</option>
-                                        <option value="UPA Realengo (Estadual)">UPA Realengo (Estadual)</option>
-                                        <option value="UPA Ricardo de Albuquerque (Estadual)">UPA Ricardo de Albuquerque (Estadual)</option>
-                                        <option value="UPA Tijuca (Estadual)">UPA Tijuca (Estadual)</option>
-                                    </optgroup>
-                                </select>
-                            </div>
+                        <div class="grid-2" style="margin-top: 10px;">
                             <div class="form-group">
                                 <label>Categoria do Problema</label>
                                 <select id="chamadoCategoria" required>
@@ -844,16 +952,46 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Descrição Detalhada do Ocorrido</label>
-                            <textarea id="chamadoDescricao" rows="3" required placeholder="Descreva o problema ocorrido..."></textarea>
+                            <label>Descrição do Ocorrido (Selecione ou Digite)</label>
+                            <select id="selectDescricaoCombo" onchange="tratarSelecaoDescricao(this.value)" required style="margin-bottom: 8px;">
+                                <option value="">Selecione uma descrição padrão...</option>
+                                <option value="Erro ao salvar triagem obstétrica no sistema.">Erro ao salvar triagem obstétrica</option>
+                                <option value="Queda de conexão recorrente no posto de atendimento.">Queda de conexão recorrente</option>
+                                <option value="Manutenção preventiva ou corretiva em monitor / hardware.">Manutenção em monitor / hardware</option>
+                                <option value="Sistema de prontuário eletrônico lento ou travando.">Prontuário travando / lento</option>
+                                <option value="Impressora sem comunicar ou com erro de spooler.">Impressora sem comunicar</option>
+                                <option value="outro">Outro (Digitar manualmente...)</option>
+                            </select>
+                            <textarea id="chamadoDescricao" rows="3" placeholder="Descreva o problema ocorrido..." style="display:none;"></textarea>
                         </div>
-                        <button type="submit" class="btn" style="width: auto; padding: 12px 24px;">Enviar Chamado</button>
+
+                        <!-- CAMPO DE SOLUÇÃO -->
+                        <div class="form-group" id="bloco-solucao-container" style="display:none; margin-top: 15px; border-top: 2px dashed var(--border-color); padding-top: 15px;">
+                            <label style="color: var(--success); font-weight: bold;">Solução Aplicada / Descrição do Atendimento</label>
+                            <select id="selectSolucaoCombo" onchange="tratarSelecaoSolucao(this.value)" style="margin-bottom: 8px;">
+                                <option value="">Selecione uma solução padrão...</option>
+                                <option value="Substituição do cabo de força danificado e reconfiguração de IP.">Substituição de cabo / Reconfiguração de IP</option>
+                                <option value="Reinicialização do sistema e limpeza de cache do navegador.">Reinicialização e limpeza de cache</option>
+                                <option value="Troca de equipamento (hardware) defeituoso por um novo.">Troca de equipamento defeituoso</option>
+                                <option value="Reconexão de cabo de rede e verificação da porta do switch.">Reconexão de rede / Switch</option>
+                                <option value="outro">Outro (Digitar manualmente...)</option>
+                            </select>
+                            <textarea id="textoSolucao" rows="3" placeholder="Descreva detalhadamente o que foi feito..." style="display:none;"></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button type="submit" id="btn-submit-chamado" class="btn" style="width: auto; padding: 10px 20px;">Enviar Chamado</button>
+                            <button type="button" id="btn-cancelar-edicao" class="btn" style="width: auto; padding: 10px 20px; background: #64748b; display:none;" onclick="cancelarEdicaoOuEncerramento()">Cancelar</button>
+                        </div>
                     </form>
                 </div>
 
                 <!-- MÓDULO: LISTAGEM E ACOMPANHAMENTO DE CHAMADOS -->
                 <div class="card">
-                    <h3>Acompanhamento de Chamados</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <h3 style="margin-bottom: 0;">Acompanhamento de Chamados</h3>
+                        <button type="button" id="btn-limpar-busca" class="btn" style="width: auto; padding: 5px 12px; font-size: 0.8rem; background: #64748b; display: none;" onclick="limparBuscaGlobal()">Mostrar Todos</button>
+                    </div>
                     <div class="table-responsive">
                         <table id="tabelaChamados">
                             <thead>
@@ -864,13 +1002,13 @@
                                     <th>Telefone</th>
                                     <th>Unidade</th>
                                     <th>Categoria</th>
-                                    <th>Descrição</th>
+                                    <th>Descrição / Solução</th>
                                     <th>Status</th>
                                     <th>Ações / Satisfação</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Inserido dinamicamente via JS -->
+                                <!-- Dinâmico -->
                             </tbody>
                         </table>
                     </div>
@@ -886,28 +1024,28 @@
     </footer>
 
     <script>
-        // Banco de Dados Simulado em Memória
         let currentUser = null;
         let targetInputId = null;
         let mediaStream = null;
+        let termoBuscaGlobal = "";
 
         let chamados = [
-            { id: 1, nome: "Enfermeira Ana Paula", setor: "Enfermagem", telefone: "(21) 97777-1111", unidade: "Hospital Maternidade Carmela Dutra", categoria: "Prontuário Eletrônico", descricao: "Erro ao salvar triagem obstétrica.", status: "aberto", avaliacao: null },
-            { id: 2, nome: "Dr. Roberto Mendes", setor: "Recepção da Emergência", telefone: "(21) 96666-2222", unidade: "Hospital Municipal Souza Aguiar", categoria: "Rede / Internet", descricao: "Queda de conexão no posto de enfermagem.", status: "andamento", avaliacao: null },
-            { id: 3, nome: "Carlos Alberto", setor: "Diretoria", telefone: "(21) 98888-3333", unidade: "Hospital Municipal Miguel Couto", categoria: "Equipamento Médico", descricao: "Manutenção preventiva em monitor multiparamétrico.", status: "encerrado", avaliacao: "feliz" }
+            { id: 1, nome: "Enfermeira Ana Paula", setor: "Enfermagem", telefone: "(21) 97777-1111", unidade: "HM Carmela Dutra", categoria: "Prontuário Eletrônico", descricao: "Erro ao salvar triagem obstétrica.", status: "aberto", solucao: "", avaliacao: null },
+            { id: 2, nome: "Dr. Roberto Mendes", setor: "Recepção da Emergência", telefone: "(21) 96666-2222", unidade: "HM Souza Aguiar", categoria: "Rede / Internet", descricao: "Queda de conexão recorrente no posto.", status: "andamento", solucao: "", avaliacao: null },
+            { id: 3, nome: "Carlos Alberto", setor: "Diretoria", telefone: "(21) 98888-3333", unidade: "HM Miguel Couto", categoria: "Equipamento Médico", descricao: "Manutenção preventiva em monitor.", status: "encerrado", solucao: "Substituição do cabo de força danificado e reconfiguração de IP.", avaliacao: "feliz" }
         ];
         let funcionarios = [
-            { nome: "Enfermeira Ana Paula", unidade: "Hospital Maternidade Carmela Dutra", setor: "Enfermagem", telefone: "(21) 97777-1111" },
-            { nome: "Dr. Roberto Mendes", unidade: "Hospital Municipal Souza Aguiar", setor: "Recepção da Emergência", telefone: "(21) 96666-2222" }
+            { nome: "Enfermeira Ana Paula", unidade: "HM Carmela Dutra", setor: "Enfermagem", telefone: "(21) 97777-1111" },
+            { nome: "Dr. Roberto Mendes", unidade: "HM Souza Aguiar", setor: "Recepção da Emergência", telefone: "(21) 96666-2222" },
+            { nome: "Carlos Alberto", unidade: "HM Miguel Couto", setor: "Diretoria", telefone: "(21) 98888-3333" }
         ];
         let inventario = [
-            { patrimonio: "P01", serial: "S1234", equipamento: "Desktop", marca: "Dell", setor: "Recepção da Emergência", responsavel: "Carlos Alberto", telefone: "21 98888-1111" }
+            { patrimonio: "P01", serial: "S1234", equipamento: "Desktop", marca: "Dell", setor: "Recepção da Emergência", responsavel: "Carlos Alberto", telefone: "(21) 98888-1111" }
         ];
 
         const marcasGerais = ["Dell", "Positivo", "Daten", "Lenovo", "LG", "AOC", "Philips", "Samsung", "TCE", "Panasonic", "Sony", "Vizzion", "Itautec", "Outros"];
         const marcasImpressora = ["Brother", "HP", "Lexmark", "Pantum", "Xerox", "Okidata", "Outros"];
 
-        // Relógio e Data em Tempo Real no Rodapé
         function atualizarRelogio() {
             const agora = new Date();
             const dia = String(agora.getDate()).padStart(2, '0');
@@ -916,13 +1054,11 @@
             const horas = String(agora.getHours()).padStart(2, '0');
             const minutos = String(agora.getMinutes()).padStart(2, '0');
             const segundos = String(agora.getSeconds()).padStart(2, '0');
-            
             document.getElementById('live-datetime').innerText = `${dia}/${mes}/${ano} ${horas}:${minutos}:${segundos}`;
         }
         setInterval(atualizarRelogio, 1000);
         atualizarRelogio();
 
-        // Funções do Modal Elegante de Toast Central
         function mostrarToast(titulo, mensagem) {
             document.getElementById('toast-title').innerText = titulo;
             document.getElementById('toast-message').innerText = mensagem;
@@ -933,7 +1069,6 @@
             document.getElementById('toast-modal').style.display = 'none';
         }
 
-        // Menu Moderno Dropdown no Celular
         function toggleMenuMobile() {
             const dropdown = document.getElementById('dropdownMenuMobile');
             dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
@@ -954,7 +1089,7 @@
             let itens = [];
             if (currentUser === 'admin') {
                 itens = [
-                    { texto: '📋 Painel Administrativo', acao: () => rolarParaSecao('panel-admin') },
+                    { texto: '📋 Dashboard Administrativo', acao: () => rolarParaSecao('panel-admin') },
                     { texto: '💻 Cadastrar Inventário', acao: () => rolarParaSecao('modulo-inventario') },
                     { texto: '👥 Cadastrar Funcionário', acao: () => rolarParaSecao('modulo-cadastro') },
                     { texto: '🛠️ Abrir Novo Chamado', acao: () => rolarParaSecao('modulo-abertura') }
@@ -987,12 +1122,50 @@
 
         function rolarParaSecao(id) {
             const el = document.getElementById(id);
-            if (el) {
-                el.scrollIntoView({ behavior: 'smooth' });
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function executarBuscaGlobal() {
+            const val = document.getElementById('globalSearchInput').value.trim();
+            termoBuscaGlobal = val;
+            document.getElementById('btn-limpar-busca').style.display = val ? 'inline-block' : 'none';
+            renderizarTabelas();
+            rolarParaSecao('tabelaChamados');
+        }
+
+        function limparBuscaGlobal() {
+            document.getElementById('globalSearchInput').value = '';
+            termoBuscaGlobal = '';
+            document.getElementById('btn-limpar-busca').style.display = 'none';
+            renderizarTabelas();
+        }
+
+        function tratarSelecaoDescricao(valor) {
+            const txtArea = document.getElementById('chamadoDescricao');
+            if (valor === 'outro') {
+                txtArea.style.display = 'block';
+                txtArea.value = '';
+                txtArea.required = true;
+            } else {
+                txtArea.style.display = 'none';
+                txtArea.value = valor;
+                txtArea.required = false;
             }
         }
 
-        // Sistema de Login e Controle de Perfis
+        function tratarSelecaoSolucao(valor) {
+            const txtArea = document.getElementById('textoSolucao');
+            if (valor === 'outro') {
+                txtArea.style.display = 'block';
+                txtArea.value = '';
+                txtArea.required = true;
+            } else {
+                txtArea.style.display = 'none';
+                txtArea.value = valor;
+                txtArea.required = false;
+            }
+        }
+
         function realizarLogin(event) {
             event.preventDefault();
             const usuarioInput = document.getElementById('usuario').value.trim().toLowerCase();
@@ -1022,6 +1195,8 @@
             document.getElementById('app-screen').style.display = 'none';
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('loginForm').reset();
+            limparBuscaGlobal();
+            cancelarEdicaoOuEncerramento();
             fecharScanner();
         }
 
@@ -1047,19 +1222,48 @@
             document.getElementById('user-display').innerText = `Perfil: ${nomePerfil}`;
         }
 
-        // Gestão de Marcas Dinâmicas para Inventário
+        function atualizarDashboardAdmin() {
+            if (currentUser !== 'admin') return;
+
+            document.getElementById('kpi-total-funcionarios').innerText = funcionarios.length;
+
+            const unidadesSet = new Set();
+            funcionarios.forEach(f => { if(f.unidade) unidadesSet.add(f.unidade); });
+            chamados.forEach(c => { if(c.unidade) unidadesSet.add(c.unidade); });
+            document.getElementById('kpi-total-unidades').innerText = unidadesSet.size;
+
+            let abertos = 0, andamento = 0, fechados = 0;
+            let totalAvaliados = 0, totalSatisfeitos = 0;
+
+            chamados.forEach(c => {
+                if (c.status === 'aberto') abertos++;
+                else if (c.status === 'andamento') andamento++;
+                else if (c.status === 'encerrado') {
+                    fechados++;
+                    if (c.avaliacao) {
+                        totalAvaliados++;
+                        if (c.avaliacao === 'feliz') totalSatisfeitos++;
+                    }
+                }
+            });
+
+            document.getElementById('kpi-chamados-abertos').innerText = abertos;
+            document.getElementById('kpi-chamados-andamento').innerText = andamento;
+            document.getElementById('kpi-chamados-fechados').innerText = fechados;
+
+            let percSatisfacao = 0;
+            if (totalAvaliados > 0) {
+                percSatisfacao = Math.round((totalSatisfeitos / totalAvaliados) * 100);
+            }
+            document.getElementById('kpi-satisfacao').innerText = `${percSatisfacao}%`;
+        }
+
         function atualizarMarcas() {
             const tipo = document.getElementById('invEquipamento').value;
             const selectMarca = document.getElementById('invMarca');
             selectMarca.innerHTML = '<option value="">Selecione a marca</option>';
 
-            let lista = [];
-            if (tipo === 'Impressoora') {
-                lista = marcasImpressora;
-            } else if (tipo !== '') {
-                lista = marcasGerais;
-            }
-
+            let lista = (tipo === 'Impressora') ? marcasImpressora : (tipo !== '' ? marcasGerais : []);
             lista.forEach(marca => {
                 const opt = document.createElement('option');
                 opt.value = marca;
@@ -1068,7 +1272,6 @@
             });
         }
 
-        // Funções de Cadastro
         function cadastrarInventario(event) {
             event.preventDefault();
             const novoItem = {
@@ -1082,7 +1285,7 @@
             };
             inventario.push(novoItem);
             document.getElementById('formInventario').reset();
-            document.getElementById('invMarca').innerHTML = '<option value="">Selecione o equipamento primeiro</option>';
+            document.getElementById('invMarca').innerHTML = '<option value="">Selecione primeiro</option>';
             renderizarTabelas();
             mostrarToast('Sucesso', 'Equipamento cadastrado no inventário!');
         }
@@ -1098,35 +1301,107 @@
             funcionarios.push(novoFunc);
             document.getElementById('formFuncionario').reset();
             renderizarTabelas();
-            mostrarToast('Sucesso', 'Funcionário/Colaborador cadastrado com sucesso!');
+            mostrarToast('Sucesso', 'Funcionário cadastrado com sucesso!');
         }
 
-        function abrirChamado(event) {
+        function salvarChamadoOuSolucao(event) {
             event.preventDefault();
-            const novoChamado = {
-                id: chamados.length + 1,
-                nome: document.getElementById('chamadoNome').value,
-                setor: document.getElementById('chamadoSetor').value,
-                telefone: document.getElementById('chamadoTelefone').value,
-                unidade: document.getElementById('chamadoUnidade').value,
-                categoria: document.getElementById('chamadoCategoria').value,
-                descricao: document.getElementById('chamadoDescricao').value,
-                status: 'aberto',
-                avaliacao: null
-            };
-            chamados.push(novoChamado);
-            document.getElementById('formChamado').reset();
-            renderizarTabelas();
-            mostrarToast('Chamado Aberto', `Chamado #${novoChamado.id} registrado com sucesso!`);
+            const editId = document.getElementById('chamadoEditId').value;
+            const nomeSolicitante = document.getElementById('chamadoNome').value.trim();
+
+            // VALIDAÇÃO DE SEGURANÇA: Todos os perfis (Admin, Técnico e Funcionário) exigem funcionário cadastrado
+            const funcionarioExiste = funcionarios.some(f => f.nome.toLowerCase() === nomeSolicitante.toLowerCase());
+            if (!funcionarioExiste) {
+                mostrarToast('Usuário Não Cadastrado', 'O usuário informado não está cadastrado. Solicite o suporte de TI para realizar o cadastro.');
+                return;
+            }
+
+            if (editId) {
+                // Salvando o encerramento do chamado existente via formulário
+                const ch = chamados.find(item => item.id == editId);
+                if (ch) {
+                    const comboSol = document.getElementById('selectSolucaoCombo').value;
+                    const solucaoTexto = comboSol === 'outro' ? document.getElementById('textoSolucao').value.trim() : comboSol;
+
+                    ch.status = 'encerrado';
+                    ch.solucao = solucaoTexto;
+
+                    cancelarEdicaoOuEncerramento();
+                    renderizarTabelas();
+                    mostrarToast('Encerrado', `Chamado #${ch.id} encerrado com solução registrada! Status atualizado para verde e satisfação liberada!`);
+                }
+            } else {
+                // Abertura de um novo chamado
+                const comboDesc = document.getElementById('selectDescricaoCombo').value;
+                let descFinal = comboDesc === 'outro' ? document.getElementById('chamadoDescricao').value : comboDesc;
+
+                const novoChamado = {
+                    id: chamados.length + 1,
+                    nome: nomeSolicitante,
+                    setor: document.getElementById('chamadoSetor').value,
+                    telefone: document.getElementById('chamadoTelefone').value,
+                    unidade: document.getElementById('chamadoUnidade').value,
+                    categoria: document.getElementById('chamadoCategoria').value,
+                    descricao: descFinal,
+                    status: 'aberto',
+                    solucao: "",
+                    avaliacao: null
+                };
+                chamados.push(novoChamado);
+                document.getElementById('formChamado').reset();
+                document.getElementById('selectDescricaoCombo').value = '';
+                document.getElementById('chamadoDescricao').style.display = 'none';
+                renderizarTabelas();
+                mostrarToast('Chamado Aberto', `Chamado #${novoChamado.id} registrado com sucesso!`);
+            }
         }
 
-        function mudarStatusChamado(id, novoStatus) {
+        function lidarMudancaStatus(id, novoStatus) {
             const ch = chamados.find(item => item.id === id);
-            if (ch) {
+            if (!ch) return;
+
+            if (novoStatus === 'encerrado') {
+                document.getElementById('chamadoEditId').value = ch.id;
+                document.getElementById('titulo-form-chamado').innerText = `Encerrar Chamado #${ch.id} (Informar Solução)`;
+                
+                document.getElementById('chamadoNome').value = ch.nome;
+                document.getElementById('chamadoSetor').value = ch.setor;
+                document.getElementById('chamadoTelefone').value = ch.telefone;
+                document.getElementById('chamadoUnidade').value = ch.unidade;
+                document.getElementById('chamadoCategoria').value = ch.categoria;
+
+                document.getElementById('selectDescricaoCombo').value = "outro";
+                document.getElementById('chamadoDescricao').style.display = 'block';
+                document.getElementById('chamadoDescricao').value = ch.descricao;
+
+                document.getElementById('bloco-solucao-container').style.display = 'block';
+                document.getElementById('selectSolucaoCombo').required = true;
+
+                document.getElementById('btn-submit-chamado').innerText = 'Salvar e Sair (Encerrar)';
+                document.getElementById('btn-submit-chamado').style.backgroundColor = 'var(--success)';
+                document.getElementById('btn-cancelar-edicao').style.display = 'inline-block';
+
+                rolarParaSecao('modulo-abertura');
+            } else {
                 ch.status = novoStatus;
                 renderizarTabelas();
                 mostrarToast('Status Atualizado', `Chamado #${id} alterado para ${novoStatus.toUpperCase()}`);
             }
+        }
+
+        function cancelarEdicaoOuEncerramento() {
+            document.getElementById('formChamado').reset();
+            document.getElementById('chamadoEditId').value = '';
+            document.getElementById('titulo-form-chamado').innerText = 'Abrir Novo Chamado de Suporte';
+            document.getElementById('selectDescricaoCombo').value = '';
+            document.getElementById('chamadoDescricao').style.display = 'none';
+            document.getElementById('bloco-solucao-container').style.display = 'none';
+            document.getElementById('selectSolucaoCombo').required = false;
+            document.getElementById('textoSolucao').style.display = 'none';
+
+            document.getElementById('btn-submit-chamado').innerText = 'Enviar Chamado';
+            document.getElementById('btn-submit-chamado').style.backgroundColor = 'var(--primary-color)';
+            document.getElementById('btn-cancelar-edicao').style.display = 'none';
         }
 
         function avaliarChamado(id, nota) {
@@ -1138,47 +1413,80 @@
             }
         }
 
-        // Renderização de Tabelas
         function renderizarTabelas() {
-            // Tabela Inventário
+            atualizarDashboardAdmin();
+
             const tbodyInv = document.querySelector('#tabelaInventario tbody');
             tbodyInv.innerHTML = '';
             inventario.forEach(item => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${item.patrimonio}</td><td>${item.serial}</td><td>${item.equipamento}</td><td>${item.marca}</td><td>${item.setor}</td><td>${item.responsavel}</td><td>${item.telefone}</td>`;
+                tr.innerHTML = `<td>${item.patrimonio}</td><td>${item.serial}</td><td>${item.equipamento}</td><td>${item.marca}</td><td>${item.setor}</td><td>${item.responsavel}</td><td style="white-space: nowrap; font-size: 0.8rem;">${item.telefone}</td>`;
                 tbodyInv.appendChild(tr);
             });
 
-            // Tabela Funcionários
             const tbodyFunc = document.querySelector('#tabelaFuncionarios tbody');
             tbodyFunc.innerHTML = '';
             funcionarios.forEach(item => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${item.nome}</td><td>${item.unidade}</td><td>${item.setor}</td><td>${item.telefone}</td>`;
+                tr.innerHTML = `<td>${item.nome}</td><td>${item.unidade}</td><td>${item.setor}</td><td style="white-space: nowrap; font-size: 0.8rem;">${item.telefone}</td>`;
                 tbodyFunc.appendChild(tr);
             });
 
-            // Tabela Chamados (Atualizada com colunas Nome, Setor e Telefone do Solicitante)
             const tbodyCh = document.querySelector('#tabelaChamados tbody');
             tbodyCh.innerHTML = '';
-            chamados.forEach(ch => {
+
+            // Filtragem de acordo com o termo da pesquisa global (por nome ou ID)
+            let chamadosFiltrados = chamados;
+            if (termoBuscaGlobal) {
+                const termoLimpo = termoBuscaGlobal.replace('#', '').toLowerCase();
+                chamadosFiltrados = chamados.filter(ch => {
+                    const matchNome = ch.nome.toLowerCase().includes(termoLimpo);
+                    const matchId = String(ch.id) === termoLimpo;
+                    return matchNome || matchId;
+                });
+            }
+
+            if (chamadosFiltrados.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="9" style="text-align: center; color: #64748b; padding: 15px;">Nenhum chamado encontrado para "${termoBuscaGlobal}".</td>`;
+                tbodyCh.appendChild(tr);
+                return;
+            }
+
+            chamadosFiltrados.forEach(ch => {
                 let badgeClass = 'badge-aberto';
                 if (ch.status === 'andamento') badgeClass = 'badge-andamento';
                 if (ch.status === 'encerrado') badgeClass = 'badge-encerrado';
 
+                let textoDescricaoSolucao = `<strong>Descrição:</strong> ${ch.descricao}`;
+                if (ch.status === 'encerrado' && ch.solucao) {
+                    textoDescricaoSolucao += `<br><span style="color: var(--success);"><strong>Solução:</strong> ${ch.solucao}</span>`;
+                }
+
                 let acoesHtml = '';
                 if (currentUser === 'admin' || currentUser === 'tecnico') {
-                    acoesHtml += `
-                        <select onchange="mudarStatusChamado(${ch.id}, this.value)" style="padding: 4px; font-size: 0.8rem; border-radius: 4px;">
+                    let seletorStatus = `
+                        <select onchange="lidarMudancaStatus(${ch.id}, this.value)" style="padding: 4px; font-size: 0.8rem; border-radius: 4px; margin-bottom: 5px; display: block;">
                             <option value="aberto" ${ch.status === 'aberto' ? 'selected' : ''}>Aberto</option>
                             <option value="andamento" ${ch.status === 'andamento' ? 'selected' : ''}>Em Andamento</option>
                             <option value="encerrado" ${ch.status === 'encerrado' ? 'selected' : ''}>Encerrado</option>
                         </select>
                     `;
+
+                    let statusAvaliacaoAdmin = '';
+                    if (ch.status === 'encerrado') {
+                        if (ch.avaliacao) {
+                            statusAvaliacaoAdmin = `<span style="font-size: 0.8rem; color: #16a34a; font-weight: 600; display: block;">Avaliação: ${ch.avaliacao === 'feliz' ? '😊 Satisfeito' : '😞 Insatisfeito'}</span>`;
+                        } else {
+                            statusAvaliacaoAdmin = `<span style="font-size: 0.75rem; color: #64748b; display: block;">Aguardando avaliação</span>`;
+                        }
+                    }
+                    acoesHtml = seletorStatus + statusAvaliacaoAdmin;
+
                 } else {
                     if (ch.status === 'encerrado') {
                         if (ch.avaliacao) {
-                            acoesHtml = `<span style="font-size: 0.85rem; color: #16a34a; font-weight: 600;">Avaliado: ${ch.avaliacao === 'feliz' ? '😊 Satisfeito' : '😞 Insatisfeito'}</span>`;
+                            acoesHtml = `<span style="font-size: 0.8rem; color: #16a34a; font-weight: 600;">Avaliado: ${ch.avaliacao === 'feliz' ? '😊 Satisfeito' : '😞 Insatisfeito'}</span>`;
                         } else {
                             acoesHtml = `
                                 <div class="satisfaction-options">
@@ -1188,7 +1496,7 @@
                             `;
                         }
                     } else {
-                        acoesHtml = `<span style="font-size: 0.8rem; color: #64748b;">Aguardando encerramento</span>`;
+                        acoesHtml = `<span style="font-size: 0.75rem; color: #64748b;">Aguardando encerramento</span>`;
                     }
                 }
 
@@ -1197,10 +1505,10 @@
                     <td>#${ch.id}</td>
                     <td>${ch.nome}</td>
                     <td>${ch.setor}</td>
-                    <td>${ch.telefone}</td>
+                    <td style="white-space: nowrap; font-size: 0.8rem;">${ch.telefone}</td>
                     <td>${ch.unidade}</td>
                     <td>${ch.categoria}</td>
-                    <td>${ch.descricao}</td>
+                    <td style="font-size: 0.82rem; line-height: 1.3;">${textoDescricaoSolucao}</td>
                     <td><span class="badge ${badgeClass}">${ch.status.toUpperCase()}</span></td>
                     <td>${acoesHtml}</td>
                 `;
@@ -1208,15 +1516,13 @@
             });
         }
 
-        // Câmera / Leitor de Código
         function iniciarScanner(inputId) {
             targetInputId = inputId;
             document.getElementById('scanner-modal').style.display = 'flex';
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
                 .then(stream => {
                     mediaStream = stream;
-                    const videoElem = document.getElementById('video-scanner');
-                    videoElem.srcObject = stream;
+                    document.getElementById('video-scanner').srcObject = stream;
                 })
                 .catch(err => {
                     mostrarToast('Câmera Indisponível', 'Não foi possível acessar a câmera do dispositivo.');
