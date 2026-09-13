@@ -93,7 +93,7 @@
         }
 
         input[id*="Telefone"] {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             letter-spacing: -0.5px;
         }
 
@@ -188,7 +188,6 @@
             flex-wrap: wrap;
         }
 
-        /* Barra de Pesquisa Superior Direita */
         .header-search-box {
             display: flex;
             align-items: center;
@@ -476,6 +475,48 @@
             line-height: 1.4;
         }
 
+        /* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO */
+        #modal-confirmar-exclusao {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2100;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .confirm-card {
+            background: white;
+            padding: 25px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            border-top: 5px solid var(--danger);
+        }
+
+        .confirm-card h3 {
+            color: var(--danger);
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .confirm-card p {
+            color: var(--text-color);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
         #scanner-modal {
             display: none;
             position: fixed;
@@ -503,6 +544,18 @@
             <h3 id="toast-title">Sucesso!</h3>
             <p id="toast-message">Operação realizada com êxito no sistema.</p>
             <button type="button" class="btn" onclick="fecharToast()">Continuar</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO -->
+    <div id="modal-confirmar-exclusao">
+        <div class="confirm-card">
+            <h3>Atenção</h3>
+            <p id="texto-aviso-exclusao">Este registro será permanentemente excluído do sistema. Deseja continuar?</p>
+            <div class="confirm-actions">
+                <button type="button" class="btn" style="background: #64748b;" onclick="fecharModalExclusao()">Cancelar</button>
+                <button type="button" class="btn" style="background: var(--danger);" onclick="confirmarExclusaoChamado()">Sim, Excluir</button>
+            </div>
         </div>
     </div>
 
@@ -555,7 +608,6 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    <!-- CAMPO DE PESQUISA GLOBAL (LUPA) -->
                     <div class="header-search-box">
                         <input type="text" id="globalSearchInput" placeholder="Nome ou Nº Chamado..." onkeydown="if(event.key === 'Enter') executarBuscaGlobal()">
                         <button type="button" onclick="executarBuscaGlobal()" title="Pesquisar Chamado">🔍</button>
@@ -835,7 +887,7 @@
                     </div>
                 </div>
 
-                <!-- MÓDULO: ABERTURA DE CHAMADOS (FORMULÁRIO DO FUNCIONÁRIO) -->
+                <!-- MÓDULO: ABERTURA DE CHAMADOS -->
                 <div id="modulo-abertura" class="card">
                     <h3 id="titulo-form-chamado">Abrir Novo Chamado de Suporte</h3>
                     <form id="formChamado" onsubmit="salvarChamadoOuSolucao(event)">
@@ -1028,6 +1080,7 @@
         let targetInputId = null;
         let mediaStream = null;
         let termoBuscaGlobal = "";
+        let chamadoParaExcluirId = null; // Variável para armazenar o ID alvo da exclusão
 
         let chamados = [
             { id: 1, nome: "Enfermeira Ana Paula", setor: "Enfermagem", telefone: "(21) 97777-1111", unidade: "HM Carmela Dutra", categoria: "Prontuário Eletrônico", descricao: "Erro ao salvar triagem obstétrica.", status: "aberto", solucao: "", avaliacao: null },
@@ -1309,7 +1362,6 @@
             const editId = document.getElementById('chamadoEditId').value;
             const nomeSolicitante = document.getElementById('chamadoNome').value.trim();
 
-            // VALIDAÇÃO DE SEGURANÇA: Todos os perfis (Admin, Técnico e Funcionário) exigem funcionário cadastrado
             const funcionarioExiste = funcionarios.some(f => f.nome.toLowerCase() === nomeSolicitante.toLowerCase());
             if (!funcionarioExiste) {
                 mostrarToast('Usuário Não Cadastrado', 'O usuário informado não está cadastrado. Solicite o suporte de TI para realizar o cadastro.');
@@ -1317,7 +1369,6 @@
             }
 
             if (editId) {
-                // Salvando o encerramento do chamado existente via formulário
                 const ch = chamados.find(item => item.id == editId);
                 if (ch) {
                     const comboSol = document.getElementById('selectSolucaoCombo').value;
@@ -1331,12 +1382,11 @@
                     mostrarToast('Encerrado', `Chamado #${ch.id} encerrado com solução registrada! Status atualizado para verde e satisfação liberada!`);
                 }
             } else {
-                // Abertura de um novo chamado
                 const comboDesc = document.getElementById('selectDescricaoCombo').value;
                 let descFinal = comboDesc === 'outro' ? document.getElementById('chamadoDescricao').value : comboDesc;
 
                 const novoChamado = {
-                    id: chamados.length + 1,
+                    id: chamados.length > 0 ? Math.max(...chamados.map(c => c.id)) + 1 : 1,
                     nome: nomeSolicitante,
                     setor: document.getElementById('chamadoSetor').value,
                     telefone: document.getElementById('chamadoTelefone').value,
@@ -1389,6 +1439,28 @@
             }
         }
 
+        /* FUNÇÕES DO MODAL DE EXCLUSÃO PERSONALIZADO */
+        function excluirChamado(id) {
+            chamadoParaExcluirId = id;
+            document.getElementById('texto-aviso-exclusao').innerText = `O chamado #${id} será permanentemente excluído do sistema. Deseja continuar?`;
+            document.getElementById('modal-confirmar-exclusao').style.display = 'flex';
+        }
+
+        function fecharModalExclusao() {
+            chamadoParaExcluirId = null;
+            document.getElementById('modal-confirmar-exclusao').style.display = 'none';
+        }
+
+        function confirmarExclusaoChamado() {
+            if (chamadoParaExcluirId !== null) {
+                const idExcluido = chamadoParaExcluirId;
+                chamados = chamados.filter(item => item.id !== idExcluido);
+                fecharModalExclusao();
+                renderizarTabelas();
+                mostrarToast('Excluído', `Chamado #${idExcluido} removido com sucesso!`);
+            }
+        }
+
         function cancelarEdicaoOuEncerramento() {
             document.getElementById('formChamado').reset();
             document.getElementById('chamadoEditId').value = '';
@@ -1435,7 +1507,6 @@
             const tbodyCh = document.querySelector('#tabelaChamados tbody');
             tbodyCh.innerHTML = '';
 
-            // Filtragem de acordo com o termo da pesquisa global (por nome ou ID)
             let chamadosFiltrados = chamados;
             if (termoBuscaGlobal) {
                 const termoLimpo = termoBuscaGlobal.replace('#', '').toLowerCase();
@@ -1464,9 +1535,11 @@
                 }
 
                 let acoesHtml = '';
+                let botaoExcluirHtml = `<button type="button" onclick="excluirChamado(${ch.id})" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; display: block; margin-top: 4px; width: 100%;">Excluir</button>`;
+
                 if (currentUser === 'admin' || currentUser === 'tecnico') {
                     let seletorStatus = `
-                        <select onchange="lidarMudancaStatus(${ch.id}, this.value)" style="padding: 4px; font-size: 0.8rem; border-radius: 4px; margin-bottom: 5px; display: block;">
+                        <select onchange="lidarMudancaStatus(${ch.id}, this.value)" style="padding: 4px; font-size: 0.8rem; border-radius: 4px; margin-bottom: 3px; display: block; width: 100%;">
                             <option value="aberto" ${ch.status === 'aberto' ? 'selected' : ''}>Aberto</option>
                             <option value="andamento" ${ch.status === 'andamento' ? 'selected' : ''}>Em Andamento</option>
                             <option value="encerrado" ${ch.status === 'encerrado' ? 'selected' : ''}>Encerrado</option>
@@ -1476,12 +1549,12 @@
                     let statusAvaliacaoAdmin = '';
                     if (ch.status === 'encerrado') {
                         if (ch.avaliacao) {
-                            statusAvaliacaoAdmin = `<span style="font-size: 0.8rem; color: #16a34a; font-weight: 600; display: block;">Avaliação: ${ch.avaliacao === 'feliz' ? '😊 Satisfeito' : '😞 Insatisfeito'}</span>`;
+                            statusAvaliacaoAdmin = `<span style="font-size: 0.8rem; color: #16a34a; font-weight: 600; display: block; margin-top: 2px;">Avaliação: ${ch.avaliacao === 'feliz' ? '😊 Satisfeito' : '😞 Insatisfeito'}</span>`;
                         } else {
-                            statusAvaliacaoAdmin = `<span style="font-size: 0.75rem; color: #64748b; display: block;">Aguardando avaliação</span>`;
+                            statusAvaliacaoAdmin = `<span style="font-size: 0.75rem; color: #64748b; display: block; margin-top: 2px;">Aguardando avaliação</span>`;
                         }
                     }
-                    acoesHtml = seletorStatus + statusAvaliacaoAdmin;
+                    acoesHtml = seletorStatus + statusAvaliacaoAdmin + (currentUser === 'admin' ? botaoExcluirHtml : '');
 
                 } else {
                     if (ch.status === 'encerrado') {
