@@ -83,7 +83,6 @@
             font-size: 0.85rem;
         }
 
-        /* Melhoria de Inputs para Dispositivos Móveis (tamanho de toque adequado) */
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px;
@@ -196,7 +195,6 @@
             font-size: 0.85rem;
         }
 
-        /* Botão Moderno de Menu Superior Direito para Celular */
         .modern-menu-toggle {
             display: none;
             background: var(--secondary-color);
@@ -216,7 +214,6 @@
             transform: scale(0.95);
         }
 
-        /* Dropdown de Menu Moderno para Celular */
         .mobile-dropdown-menu {
             display: none;
             position: absolute;
@@ -259,7 +256,7 @@
                 display: flex;
             }
             .user-info span {
-                display: none; /* Oculta o texto do usuário no topo mobile para ganhar espaço */
+                display: none;
             }
             .desktop-nav-hide {
                 display: none !important;
@@ -294,7 +291,6 @@
             margin-bottom: 10px;
         }
 
-        /* Tabelas Responsivas com Scroll Horizontal */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -320,7 +316,6 @@
             color: var(--primary-color);
         }
 
-        /* Badges de Status */
         .badge {
             padding: 4px 8px;
             border-radius: 12px;
@@ -333,7 +328,6 @@
         .badge-andamento { background-color: var(--warning); }
         .badge-encerrado { background-color: var(--success); }
 
-        /* Rodapé Fixo */
         footer {
             background-color: #1e293b;
             color: #94a3b8;
@@ -343,7 +337,6 @@
             margin-top: auto;
         }
 
-        /* Grid Otimizada para Celular/Desktop */
         .grid-2 {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -372,7 +365,6 @@
             background: #f0fdf4;
         }
 
-        /* Modal Centralizado para Mensagens Elegantes de Sucesso */
         #toast-modal {
             display: none;
             position: fixed;
@@ -414,7 +406,6 @@
             line-height: 1.4;
         }
 
-        /* Modal para Leitor de Código de Câmera */
         #scanner-modal {
             display: none;
             position: fixed;
@@ -498,11 +489,9 @@
                         <span id="user-display">Perfil: Admin</span>
                         <button class="logout-btn" onclick="realizarLogout()">Sair</button>
                     </div>
-                    <!-- Botão Moderno de Menu para Celular (Canto Superior Direito) -->
                     <button class="modern-menu-toggle" id="btnMenuMobile" onclick="toggleMenuMobile()" title="Menu de Navegação">
                         ☰
                     </button>
-                    <!-- Dropdown de Opções Mobile -->
                     <div id="dropdownMenuMobile" class="mobile-dropdown-menu">
                         <!-- Preenchido dinamicamente via JS com base no perfil -->
                     </div>
@@ -625,14 +614,102 @@
                 <div id="modulo-cadastro" class="card">
                     <h3>Cadastro de Funcionários / Colaboradores</h3>
                     <form id="formFuncionario" onsubmit="cadastrarFuncionario(event)">
-                        <div class="grid-2">
+                        <div class="grid-3">
                             <div class="form-group">
                                 <label>Nome Completo</label>
                                 <input type="text" id="funcNome" required placeholder="Ex: Dr. Carlos Silva">
                             </div>
                             <div class="form-group">
-                                <label>Setor / Unidade (Hospital ou Maternidade)</label>
-                                <input type="text" id="funcSetor" required placeholder="Ex: Maternidade - UTI Neo">
+                                <label>Unidade de Saúde (Hospital/Maternidade/UPA)</label>
+                                <select id="funcUnidade" required>
+                                    <option value="">Selecione a unidade...</option>
+                                    <optgroup label="Hospitais Municipais e Estaduais">
+                                        <option value="Hospital Municipal Souza Aguiar">Hospital Municipal Souza Aguiar</option>
+                                        <option value="Hospital Municipal Salgado Filho">Hospital Municipal Salgado Filho</option>
+                                        <option value="Hospital Municipal Miguel Couto">Hospital Municipal Miguel Couto</option>
+                                        <option value="Hospital Municipal Lourenço Jorge">Hospital Municipal Lourenço Jorge</option>
+                                        <option value="Hospital Municipal Pedro II">Hospital Municipal Pedro II</option>
+                                        <option value="Hospital Municipal Evandro Freire">Hospital Municipal Evandro Freire</option>
+                                        <option value="Hospital Municipal Albert Schweitzer">Hospital Municipal Albert Schweitzer</option>
+                                        <option value="Hospital Municipal Rocha Faria">Hospital Municipal Rocha Faria</option>
+                                        <option value="Hospital Municipal Rocha Maia">Hospital Municipal Rocha Maia</option>
+                                        <option value="Hospital Municipal Francisco da Silva Telles">Hospital Municipal Francisco da Silva Telles</option>
+                                        <option value="Hospital Estadual Getúlio Vargas">Hospital Estadual Getúlio Vargas</option>
+                                        <option value="Hospital Estadual Carlos Chagas">Hospital Estadual Carlos Chagas</option>
+                                        <option value="Hospital Estadual Anchieta">Hospital Estadual Anchieta</option>
+                                    </optgroup>
+                                    <optgroup label="Maternidades e Casas de Parto">
+                                        <option value="Hospital Municipal Leila Diniz">Hospital Municipal Leila Diniz</option>
+                                        <option value="Hospital Maternidade Herculano Pinheiro">Hospital Maternidade Herculano Pinheiro</option>
+                                        <option value="Hospital Maternidade Fernando Magalhães">Hospital Maternidade Fernando Magalhães</option>
+                                        <option value="Hospital Maternidade Alexander Fleming">Hospital Maternidade Alexander Fleming</option>
+                                        <option value="Hospital Maternidade Carmela Dutra">Hospital Maternidade Carmela Dutra</option>
+                                        <option value="Hospital Maternidade Maria Amélia Buarque de Hollanda">Hospital Maternidade Maria Amélia Buarque de Hollanda</option>
+                                        <option value="Maternidade Municipal do Rocha Faria">Maternidade Municipal do Rocha Faria</option>
+                                        <option value="Maternidade Municipal do Pedro II">Maternidade Municipal do Pedro II</option>
+                                        <option value="Maternidade Municipal do Lourenço Jorge">Maternidade Municipal do Lourenço Jorge</option>
+                                        <option value="Maternidade Municipal do Albert Schweitzer">Maternidade Municipal do Albert Schweitzer</option>
+                                        <option value="Maternidade Municipal da Ilha do Governador">Maternidade Municipal da Ilha do Governador</option>
+                                        <option value="Hospital Maternidade Bangu">Hospital Maternidade Bangu</option>
+                                        <option value="Casa de Parto David Capistrano da Costa Filho">Casa de Parto David Capistrano da Costa Filho</option>
+                                    </optgroup>
+                                    <optgroup label="Unidades de Pronto Atendimento (UPAs 24h)">
+                                        <option value="UPA Rocinha">UPA Rocinha</option>
+                                        <option value="UPA Alemão">UPA Alemão</option>
+                                        <option value="UPA Manguinhos">UPA Manguinhos</option>
+                                        <option value="UPA Del Castilho / Inhaúma">UPA Del Castilho / Inhaúma</option>
+                                        <option value="UPA Engenho de Dentro">UPA Engenho de Dentro</option>
+                                        <option value="UPA Madureira">UPA Madureira</option>
+                                        <option value="UPA Costa Barros">UPA Costa Barros</option>
+                                        <option value="UPA Rocha Miranda">UPA Rocha Miranda</option>
+                                        <option value="UPA Cidade de Deus">UPA Cidade de Deus</option>
+                                        <option value="UPA Vila Kennedy">UPA Vila Kennedy</option>
+                                        <option value="UPA Senador Camará">UPA Senador Camará</option>
+                                        <option value="UPA Magalhães Bastos">UPA Magalhães Bastos</option>
+                                        <option value="UPA Sepetiba">UPA Sepetiba</option>
+                                        <option value="UPA Santa Cruz (João XXIII)">UPA Santa Cruz (João XXIII)</option>
+                                        <option value="UPA Paciência (Jardim 7 de Abril)">UPA Paciência (Jardim 7 de Abril)</option>
+                                        <option value="UPA Bangu (Estadual)">UPA Bangu (Estadual)</option>
+                                        <option value="UPA Botafogo (Estadual)">UPA Botafogo (Estadual)</option>
+                                        <option value="UPA Campo Grande I e II (Estadual)">UPA Campo Grande I e II (Estadual)</option>
+                                        <option value="UPA Copacabana (Estadual)">UPA Copacabana (Estadual)</option>
+                                        <option value="UPA Engenho Novo (Estadual)">UPA Engenho Novo (Estadual)</option>
+                                        <option value="UPA Ilha do Governador (Estadual)">UPA Ilha do Governador (Estadual)</option>
+                                        <option value="UPA Irajá (Estadual)">UPA Irajá (Estadual)</option>
+                                        <option value="UPA Jacarepaguá (Estadual)">UPA Jacarepaguá (Estadual)</option>
+                                        <option value="UPA Maré / Vila do João (Estadual)">UPA Maré / Vila do João (Estadual)</option>
+                                        <option value="UPA Marechal Hermes (Estadual)">UPA Marechal Hermes (Estadual)</option>
+                                        <option value="UPA Penha (Estadual)">UPA Penha (Estadual)</option>
+                                        <option value="UPA Realengo (Estadual)">UPA Realengo (Estadual)</option>
+                                        <option value="UPA Ricardo de Albuquerque (Estadual)">UPA Ricardo de Albuquerque (Estadual)</option>
+                                        <option value="UPA Tijuca (Estadual)">UPA Tijuca (Estadual)</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Setor</label>
+                                <select id="funcSetor" required>
+                                    <option value="">Selecione o Setor</option>
+                                    <option value="Recepção da Emergência">Recepção da Emergência</option>
+                                    <option value="NIR">NIR</option>
+                                    <option value="Diretoria">Diretoria</option>
+                                    <option value="Cegonha">Cegonha</option>
+                                    <option value="Medicação">Medicação</option>
+                                    <option value="Sala Médica 1">Sala Médica 1</option>
+                                    <option value="Sala Médica 2">Sala Médica 2</option>
+                                    <option value="Obstétrica">Obstétrica</option>
+                                    <option value="Acalanto">Acalanto</option>
+                                    <option value="Enfermagem">Enfermagem</option>
+                                    <option value="Expurgo">Expurgo</option>
+                                    <option value="Segurança">Segurança</option>
+                                    <option value="Ambulatório">Ambulatório</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Telefone</label>
+                                <input type="text" id="funcTelefone" required placeholder="(21) 99999-9999">
                             </div>
                         </div>
                         <button type="submit" class="btn" style="width: auto; padding: 12px 24px;">Cadastrar Funcionário</button>
@@ -643,7 +720,9 @@
                             <thead>
                                 <tr>
                                     <th>Nome</th>
-                                    <th>Setor/Unidade</th>
+                                    <th>Unidade</th>
+                                    <th>Setor</th>
+                                    <th>Telefone</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -653,19 +732,105 @@
                     </div>
                 </div>
 
-                <!-- MÓDULO: ABERTURA DE CHAMADOS (Todos podem abrir) -->
+                <!-- MÓDULO: ABERTURA DE CHAMADOS (Atualizado com Nome, Setor e Telefone) -->
                 <div id="modulo-abertura" class="card">
                     <h3>Abrir Novo Chamado de Suporte</h3>
                     <form id="formChamado" onsubmit="abrirChamado(event)">
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>Nome do Solicitante</label>
+                                <input type="text" id="chamadoNome" required placeholder="Seu nome completo">
+                            </div>
+                            <div class="form-group">
+                                <label>Setor</label>
+                                <select id="chamadoSetor" required>
+                                    <option value="">Selecione o Setor</option>
+                                    <option value="Recepção da Emergência">Recepção da Emergência</option>
+                                    <option value="NIR">NIR</option>
+                                    <option value="Diretoria">Diretoria</option>
+                                    <option value="Cegonha">Cegonha</option>
+                                    <option value="Medicação">Medicação</option>
+                                    <option value="Sala Médica 1">Sala Médica 1</option>
+                                    <option value="Sala Médica 2">Sala Médica 2</option>
+                                    <option value="Obstétrica">Obstétrica</option>
+                                    <option value="Acalanto">Acalanto</option>
+                                    <option value="Enfermagem">Enfermagem</option>
+                                    <option value="Expurgo">Expurgo</option>
+                                    <option value="Segurança">Segurança</option>
+                                    <option value="Ambulatório">Ambulatório</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Telefone de Contato</label>
+                                <input type="text" id="chamadoTelefone" required placeholder="(21) 99999-9999">
+                            </div>
+                        </div>
                         <div class="grid-2">
                             <div class="form-group">
-                                <label>Unidade Hospitalar / Maternidade</label>
+                                <label>Selecione Hospital, Maternidade ou UPA</label>
                                 <select id="chamadoUnidade" required>
-                                    <option value="">Selecione o Hospital / Maternidade</option>
-                                    <option value="Hospital Municipal Souza Aguiar">Hospital Municipal Souza Aguiar</option>
-                                    <option value="Hospital Municipal Miguel Couto">Hospital Municipal Miguel Couto</option>
-                                    <option value="Maternidade Carmela Dutra">Maternidade Carmela Dutra</option>
-                                    <option value="Maternidade Fernando Magalhães">Maternidade Fernando Magalhães</option>
+                                    <option value="">Selecione a unidade...</option>
+                                    <optgroup label="Hospitais Municipais e Estaduais">
+                                        <option value="Hospital Municipal Souza Aguiar">Hospital Municipal Souza Aguiar</option>
+                                        <option value="Hospital Municipal Salgado Filho">Hospital Municipal Salgado Filho</option>
+                                        <option value="Hospital Municipal Miguel Couto">Hospital Municipal Miguel Couto</option>
+                                        <option value="Hospital Municipal Lourenço Jorge">Hospital Municipal Lourenço Jorge</option>
+                                        <option value="Hospital Municipal Pedro II">Hospital Municipal Pedro II</option>
+                                        <option value="Hospital Municipal Evandro Freire">Hospital Municipal Evandro Freire</option>
+                                        <option value="Hospital Municipal Albert Schweitzer">Hospital Municipal Albert Schweitzer</option>
+                                        <option value="Hospital Municipal Rocha Faria">Hospital Municipal Rocha Faria</option>
+                                        <option value="Hospital Municipal Rocha Maia">Hospital Municipal Rocha Maia</option>
+                                        <option value="Hospital Municipal Francisco da Silva Telles">Hospital Municipal Francisco da Silva Telles</option>
+                                        <option value="Hospital Estadual Getúlio Vargas">Hospital Estadual Getúlio Vargas</option>
+                                        <option value="Hospital Estadual Carlos Chagas">Hospital Estadual Carlos Chagas</option>
+                                        <option value="Hospital Estadual Anchieta">Hospital Estadual Anchieta</option>
+                                    </optgroup>
+                                    <optgroup label="Maternidades e Casas de Parto">
+                                        <option value="Hospital Municipal Leila Diniz">Hospital Municipal Leila Diniz</option>
+                                        <option value="Hospital Maternidade Herculano Pinheiro">Hospital Maternidade Herculano Pinheiro</option>
+                                        <option value="Hospital Maternidade Fernando Magalhães">Hospital Maternidade Fernando Magalhães</option>
+                                        <option value="Hospital Maternidade Alexander Fleming">Hospital Maternidade Alexander Fleming</option>
+                                        <option value="Hospital Maternidade Carmela Dutra">Hospital Maternidade Carmela Dutra</option>
+                                        <option value="Hospital Maternidade Maria Amélia Buarque de Hollanda">Hospital Maternidade Maria Amélia Buarque de Hollanda</option>
+                                        <option value="Maternidade Municipal do Rocha Faria">Maternidade Municipal do Rocha Faria</option>
+                                        <option value="Maternidade Municipal do Pedro II">Maternidade Municipal do Pedro II</option>
+                                        <option value="Maternidade Municipal do Lourenço Jorge">Maternidade Municipal do Lourenço Jorge</option>
+                                        <option value="Maternidade Municipal do Albert Schweitzer">Maternidade Municipal do Albert Schweitzer</option>
+                                        <option value="Maternidade Municipal da Ilha do Governador">Maternidade Municipal da Ilha do Governador</option>
+                                        <option value="Hospital Maternidade Bangu">Hospital Maternidade Bangu</option>
+                                        <option value="Casa de Parto David Capistrano da Costa Filho">Casa de Parto David Capistrano da Costa Filho</option>
+                                    </optgroup>
+                                    <optgroup label="Unidades de Pronto Atendimento (UPAs 24h)">
+                                        <option value="UPA Rocinha">UPA Rocinha</option>
+                                        <option value="UPA Alemão">UPA Alemão</option>
+                                        <option value="UPA Manguinhos">UPA Manguinhos</option>
+                                        <option value="UPA Del Castilho / Inhaúma">UPA Del Castilho / Inhaúma</option>
+                                        <option value="UPA Engenho de Dentro">UPA Engenho de Dentro</option>
+                                        <option value="UPA Madureira">UPA Madureira</option>
+                                        <option value="UPA Costa Barros">UPA Costa Barros</option>
+                                        <option value="UPA Rocha Miranda">UPA Rocha Miranda</option>
+                                        <option value="UPA Cidade de Deus">UPA Cidade de Deus</option>
+                                        <option value="UPA Vila Kennedy">UPA Vila Kennedy</option>
+                                        <option value="UPA Senador Camará">UPA Senador Camará</option>
+                                        <option value="UPA Magalhães Bastos">UPA Magalhães Bastos</option>
+                                        <option value="UPA Sepetiba">UPA Sepetiba</option>
+                                        <option value="UPA Santa Cruz (João XXIII)">UPA Santa Cruz (João XXIII)</option>
+                                        <option value="UPA Paciência (Jardim 7 de Abril)">UPA Paciência (Jardim 7 de Abril)</option>
+                                        <option value="UPA Bangu (Estadual)">UPA Bangu (Estadual)</option>
+                                        <option value="UPA Botafogo (Estadual)">UPA Botafogo (Estadual)</option>
+                                        <option value="UPA Campo Grande I e II (Estadual)">UPA Campo Grande I e II (Estadual)</option>
+                                        <option value="UPA Copacabana (Estadual)">UPA Copacabana (Estadual)</option>
+                                        <option value="UPA Engenho Novo (Estadual)">UPA Engenho Novo (Estadual)</option>
+                                        <option value="UPA Ilha do Governador (Estadual)">UPA Ilha do Governador (Estadual)</option>
+                                        <option value="UPA Irajá (Estadual)">UPA Irajá (Estadual)</option>
+                                        <option value="UPA Jacarepaguá (Estadual)">UPA Jacarepaguá (Estadual)</option>
+                                        <option value="UPA Maré / Vila do João (Estadual)">UPA Maré / Vila do João (Estadual)</option>
+                                        <option value="UPA Marechal Hermes (Estadual)">UPA Marechal Hermes (Estadual)</option>
+                                        <option value="UPA Penha (Estadual)">UPA Penha (Estadual)</option>
+                                        <option value="UPA Realengo (Estadual)">UPA Realengo (Estadual)</option>
+                                        <option value="UPA Ricardo de Albuquerque (Estadual)">UPA Ricardo de Albuquerque (Estadual)</option>
+                                        <option value="UPA Tijuca (Estadual)">UPA Tijuca (Estadual)</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -694,6 +859,9 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Solicitante</th>
+                                    <th>Setor</th>
+                                    <th>Telefone</th>
                                     <th>Unidade</th>
                                     <th>Categoria</th>
                                     <th>Descrição</th>
@@ -712,7 +880,7 @@
         </div>
     </main>
 
-    <!-- RODAPÉ ATUALIZADO CONFORME SOLICITADO -->
+    <!-- RODAPÉ -->
     <footer>
         Direitos Reservado Demilson Lemos @2026 Contato: 21990288979 - <span id="live-datetime"></span>
     </footer>
@@ -724,13 +892,13 @@
         let mediaStream = null;
 
         let chamados = [
-            { id: 1, unidade: "Maternidade Carmela Dutra", categoria: "Prontuário Eletrônico", descricao: "Erro ao salvar triagem obstétrica.", status: "aberto", avaliacao: null },
-            { id: 2, unidade: "Hospital Municipal Souza Aguiar", categoria: "Rede / Internet", descricao: "Queda de conexão no posto de enfermagem.", status: "andamento", avaliacao: null },
-            { id: 3, unidade: "Hospital Municipal Miguel Couto", categoria: "Equipamento Médico", descricao: "Manutenção preventiva em monitor multiparamétrico.", status: "encerrado", avaliacao: "feliz" }
+            { id: 1, nome: "Enfermeira Ana Paula", setor: "Enfermagem", telefone: "(21) 97777-1111", unidade: "Hospital Maternidade Carmela Dutra", categoria: "Prontuário Eletrônico", descricao: "Erro ao salvar triagem obstétrica.", status: "aberto", avaliacao: null },
+            { id: 2, nome: "Dr. Roberto Mendes", setor: "Recepção da Emergência", telefone: "(21) 96666-2222", unidade: "Hospital Municipal Souza Aguiar", categoria: "Rede / Internet", descricao: "Queda de conexão no posto de enfermagem.", status: "andamento", avaliacao: null },
+            { id: 3, nome: "Carlos Alberto", setor: "Diretoria", telefone: "(21) 98888-3333", unidade: "Hospital Municipal Miguel Couto", categoria: "Equipamento Médico", descricao: "Manutenção preventiva em monitor multiparamétrico.", status: "encerrado", avaliacao: "feliz" }
         ];
         let funcionarios = [
-            { nome: "Enfermeira Ana Paula", setor: "Maternidade Carmela Dutra" },
-            { nome: "Dr. Roberto Mendes", setor: "Hospital Souza Aguiar" }
+            { nome: "Enfermeira Ana Paula", unidade: "Hospital Maternidade Carmela Dutra", setor: "Enfermagem", telefone: "(21) 97777-1111" },
+            { nome: "Dr. Roberto Mendes", unidade: "Hospital Municipal Souza Aguiar", setor: "Recepção da Emergência", telefone: "(21) 96666-2222" }
         ];
         let inventario = [
             { patrimonio: "P01", serial: "S1234", equipamento: "Desktop", marca: "Dell", setor: "Recepção da Emergência", responsavel: "Carlos Alberto", telefone: "21 98888-1111" }
@@ -771,7 +939,6 @@
             dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
         }
 
-        // Fechar menu dropdown ao clicar fora em telas mobile
         window.addEventListener('click', function(e) {
             const dropdown = document.getElementById('dropdownMenuMobile');
             const btnMenu = document.getElementById('btnMenuMobile');
@@ -801,14 +968,15 @@
                 ];
             } else {
                 itens = [
-                    { texto: '📋 Área do Funcionário', acao: () => rolarParaSecao('panel-funcionario') },
+                    { texto: '👤 Área do Funcionário', acao: () => rolarParaSecao('panel-funcionario') },
                     { texto: '🛠️ Abrir Novo Chamado', acao: () => rolarParaSecao('modulo-abertura') }
                 ];
             }
 
             itens.forEach(item => {
                 const btn = document.createElement('button');
-                btn.innerHTML = item.texto;
+                btn.type = 'button';
+                btn.innerText = item.texto;
                 btn.onclick = () => {
                     item.acao();
                     dropdown.style.display = 'none';
@@ -820,272 +988,248 @@
         function rolarParaSecao(id) {
             const el = document.getElementById(id);
             if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                el.scrollIntoView({ behavior: 'smooth' });
             }
         }
 
-        function atualizarMarcas() {
-            const tipo = document.getElementById('invEquipamento').value;
-            const selectMarca = document.getElementById('invMarca');
-            selectMarca.innerHTML = '<option value="">Selecione a Marca</option>';
-
-            let lista = [];
-            if (tipo === "Desktop" || tipo === "Notebook" || tipo === "Monitor" || tipo === "Teclado" || tipo === "Mouse") {
-                lista = marcasGerais;
-            } else if (tipo === "Impressoora") {
-                lista = marcasImpressora;
-            }
-
-            lista.forEach(m => {
-                selectMarca.innerHTML += `<option value="${m}">${m}</option>`;
-            });
-        }
-
-        // Leitor de Código de Barras via Câmera do Celular
-        async function iniciarScanner(inputId) {
-            targetInputId = inputId;
-            document.getElementById('scanner-modal').style.display = 'flex';
-            
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                const videoElement = document.getElementById('video-scanner');
-                videoElement.srcObject = mediaStream;
-
-                if (window.BarcodeDetector) {
-                    const barcodeDetector = new BarcodeDetector({ formats: ['code_128', 'qr_code', 'ean_13'] });
-                    const detectLoop = async () => {
-                        if (document.getElementById('scanner-modal').style.display === 'flex') {
-                            try {
-                                const barcodes = await barcodeDetector.detect(videoElement);
-                                if (barcodes.length > 0) {
-                                    const valorLido = barcodes[0].rawValue;
-                                    document.getElementById(targetInputId).value = valorLido.slice(0, targetInputId === 'invPatrimonio' ? 4 : 5);
-                                    fecharScanner();
-                                    return;
-                                }
-                            } catch(e) {}
-                            requestAnimationFrame(detectLoop);
-                        }
-                    };
-                    detectLoop();
-                }
-            } catch (err) {
-                alert("Câmera indisponível ou permissão negada. Você pode digitar manualmente.");
-                fecharScanner();
-            }
-        }
-
-        function fecharScanner() {
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-                mediaStream = null;
-            }
-            document.getElementById('scanner-modal').style.display = 'none';
-        }
-
+        // Sistema de Login e Controle de Perfis
         function realizarLogin(event) {
             event.preventDefault();
             const usuarioInput = document.getElementById('usuario').value.trim().toLowerCase();
             const senhaInput = document.getElementById('senha').value;
 
-            if (senhaInput !== "123") {
-                alert("Senha incorreta! Utilize '123' para os testes.");
+            if (senhaInput !== '123') {
+                mostrarToast('Atenção', 'Senha incorreta! Use a senha padrão: 123');
                 return;
             }
 
             if (usuarioInput === 'admin' || usuarioInput === 'tecnico' || usuarioInput === 'funcionario') {
                 currentUser = usuarioInput;
-                iniciarSistema();
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-screen').style.display = 'flex';
+                
+                aplicarPermissoesPerfil();
+                construirMenuMobileDropdown();
+                renderizarTabelas();
+                mostrarToast('Bem-vindo!', `Sessão iniciada como ${currentUser.toUpperCase()}`);
             } else {
-                alert("Usuário não encontrado! Use: admin, tecnico ou funcionario");
+                mostrarToast('Erro de Login', 'Usuário não reconhecido. Use: admin, tecnico ou funcionario');
             }
-        }
-
-        function iniciarSistema() {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-screen').style.display = 'flex';
-
-            document.getElementById('panel-admin').style.display = (currentUser === 'admin') ? 'block' : 'none';
-            document.getElementById('panel-tecnico').style.display = (currentUser === 'tecnico') ? 'block' : 'none';
-            document.getElementById('panel-funcionario').style.display = (currentUser === 'funcionario') ? 'block' : 'none';
-
-            if (currentUser === 'admin' || currentUser === 'tecnico') {
-                document.getElementById('modulo-cadastro').style.display = 'block';
-                document.getElementById('modulo-inventario').style.display = 'block';
-                atualizarTabelaFuncionarios();
-                atualizarTabelaInventario();
-            } else {
-                document.getElementById('modulo-cadastro').style.display = 'none';
-                document.getElementById('modulo-inventario').style.display = 'none';
-            }
-
-            document.getElementById('user-display').innerText = `Perfil: ${currentUser.toUpperCase()}`;
-            construirMenuMobileDropdown();
-            atualizarTabelaChamados();
         }
 
         function realizarLogout() {
             currentUser = null;
-            document.getElementById('loginForm').reset();
             document.getElementById('app-screen').style.display = 'none';
             document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('loginForm').reset();
+            fecharScanner();
         }
 
-        function abrirChamado(event) {
+        function aplicarPermissoesPerfil() {
+            document.getElementById('panel-admin').style.display = (currentUser === 'admin') ? 'block' : 'none';
+            document.getElementById('panel-tecnico').style.display = (currentUser === 'tecnico') ? 'block' : 'none';
+            document.getElementById('panel-funcionario').style.display = (currentUser === 'funcionario') ? 'block' : 'none';
+
+            const modInv = document.getElementById('modulo-inventario');
+            const modCad = document.getElementById('modulo-cadastro');
+
+            if (currentUser === 'funcionario') {
+                modInv.style.display = 'none';
+                modCad.style.display = 'none';
+            } else {
+                modInv.style.display = 'block';
+                modCad.style.display = 'block';
+            }
+
+            let nomePerfil = 'Admin';
+            if (currentUser === 'tecnico') nomePerfil = 'Técnico';
+            if (currentUser === 'funcionario') nomePerfil = 'Funcionário';
+            document.getElementById('user-display').innerText = `Perfil: ${nomePerfil}`;
+        }
+
+        // Gestão de Marcas Dinâmicas para Inventário
+        function atualizarMarcas() {
+            const tipo = document.getElementById('invEquipamento').value;
+            const selectMarca = document.getElementById('invMarca');
+            selectMarca.innerHTML = '<option value="">Selecione a marca</option>';
+
+            let lista = [];
+            if (tipo === 'Impressoora') {
+                lista = marcasImpressora;
+            } else if (tipo !== '') {
+                lista = marcasGerais;
+            }
+
+            lista.forEach(marca => {
+                const opt = document.createElement('option');
+                opt.value = marca;
+                opt.innerText = marca;
+                selectMarca.appendChild(opt);
+            });
+        }
+
+        // Funções de Cadastro
+        function cadastrarInventario(event) {
             event.preventDefault();
-            const unidade = document.getElementById('chamadoUnidade').value;
-            const categoria = document.getElementById('chamadoCategoria').value;
-            const descricao = document.getElementById('chamadoDescricao').value;
-
-            const novoChamado = {
-                id: chamados.length + 1,
-                unidade,
-                categoria,
-                descricao,
-                status: 'aberto',
-                avaliacao: null
+            const novoItem = {
+                patrimonio: document.getElementById('invPatrimonio').value,
+                serial: document.getElementById('invSerial').value,
+                equipamento: document.getElementById('invEquipamento').value,
+                marca: document.getElementById('invMarca').value,
+                setor: document.getElementById('invSetor').value,
+                responsavel: document.getElementById('invResponsavel').value,
+                telefone: document.getElementById('invTelefone').value
             };
-
-            chamados.push(novoChamado);
-            document.getElementById('formChamado').reset();
-            
-            // Mensagem elegante centralizada para abertura de chamado
-            mostrarToast("Chamado Registrado!", "Sua solicitação foi encaminhada com sucesso para nossa equipe técnica.");
-            atualizarTabelaChamados();
+            inventario.push(novoItem);
+            document.getElementById('formInventario').reset();
+            document.getElementById('invMarca').innerHTML = '<option value="">Selecione o equipamento primeiro</option>';
+            renderizarTabelas();
+            mostrarToast('Sucesso', 'Equipamento cadastrado no inventário!');
         }
 
         function cadastrarFuncionario(event) {
             event.preventDefault();
-            const nome = document.getElementById('funcNome').value;
-            const setor = document.getElementById('funcSetor').value;
-
-            funcionarios.push({ nome, setor });
+            const novoFunc = {
+                nome: document.getElementById('funcNome').value,
+                unidade: document.getElementById('funcUnidade').value,
+                setor: document.getElementById('funcSetor').value,
+                telefone: document.getElementById('funcTelefone').value
+            };
+            funcionarios.push(novoFunc);
             document.getElementById('formFuncionario').reset();
-            
-            // Mensagem elegante centralizada para cadastro
-            mostrarToast("Cadastro Concluído!", "O colaborador foi registrado com sucesso no sistema da Riosaúde.");
-            atualizarTabelaFuncionarios();
+            renderizarTabelas();
+            mostrarToast('Sucesso', 'Funcionário/Colaborador cadastrado com sucesso!');
         }
 
-        function cadastrarInventario(event) {
+        function abrirChamado(event) {
             event.preventDefault();
-            const patrimonio = document.getElementById('invPatrimonio').value.trim();
-            const serial = document.getElementById('invSerial').value.trim();
-            const equipamento = document.getElementById('invEquipamento').value;
-            const marca = document.getElementById('invMarca').value;
-            const setor = document.getElementById('invSetor').value;
-            const responsavel = document.getElementById('invResponsavel').value;
-            const telefone = document.getElementById('invTelefone').value;
-
-            if (patrimonio.length > 4) {
-                alert("O Patrimônio deve ter no máximo 4 caracteres.");
-                return;
-            }
-            if (serial.length > 5) {
-                alert("O Serial deve ter no máximo 5 caracteres.");
-                return;
-            }
-
-            inventario.push({ patrimonio, serial, equipamento, marca, setor, responsavel, telefone });
-            document.getElementById('formInventario').reset();
-            document.getElementById('invMarca').innerHTML = '<option value="">Selecione o equipamento primeiro</option>';
-            
-            // Mensagem elegante centralizada para inventário
-            mostrarToast("Equipamento Salvo!", "O ativo tecnológico foi incorporado com sucesso ao inventário hospitalar.");
-            atualizarTabelaInventario();
+            const novoChamado = {
+                id: chamados.length + 1,
+                nome: document.getElementById('chamadoNome').value,
+                setor: document.getElementById('chamadoSetor').value,
+                telefone: document.getElementById('chamadoTelefone').value,
+                unidade: document.getElementById('chamadoUnidade').value,
+                categoria: document.getElementById('chamadoCategoria').value,
+                descricao: document.getElementById('chamadoDescricao').value,
+                status: 'aberto',
+                avaliacao: null
+            };
+            chamados.push(novoChamado);
+            document.getElementById('formChamado').reset();
+            renderizarTabelas();
+            mostrarToast('Chamado Aberto', `Chamado #${novoChamado.id} registrado com sucesso!`);
         }
 
-        function atualizarTabelaFuncionarios() {
-            const tbody = document.querySelector('#tabelaFuncionarios tbody');
-            tbody.innerHTML = '';
-            funcionarios.forEach(f => {
-                tbody.innerHTML += `<tr><td>${f.nome}</td><td>${f.setor}</td></tr>`;
+        function mudarStatusChamado(id, novoStatus) {
+            const ch = chamados.find(item => item.id === id);
+            if (ch) {
+                ch.status = novoStatus;
+                renderizarTabelas();
+                mostrarToast('Status Atualizado', `Chamado #${id} alterado para ${novoStatus.toUpperCase()}`);
+            }
+        }
+
+        function avaliarChamado(id, nota) {
+            const ch = chamados.find(item => item.id === id);
+            if (ch) {
+                ch.avaliacao = nota;
+                renderizarTabelas();
+                mostrarToast('Avaliação Registrada', 'Obrigado pelo seu feedback!');
+            }
+        }
+
+        // Renderização de Tabelas
+        function renderizarTabelas() {
+            // Tabela Inventário
+            const tbodyInv = document.querySelector('#tabelaInventario tbody');
+            tbodyInv.innerHTML = '';
+            inventario.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${item.patrimonio}</td><td>${item.serial}</td><td>${item.equipamento}</td><td>${item.marca}</td><td>${item.setor}</td><td>${item.responsavel}</td><td>${item.telefone}</td>`;
+                tbodyInv.appendChild(tr);
             });
-        }
 
-        function atualizarTabelaInventario() {
-            const tbody = document.querySelector('#tabelaInventario tbody');
-            tbody.innerHTML = '';
-            inventario.forEach(i => {
-                tbody.innerHTML += `<tr><td><strong>${i.patrimonio}</strong></td><td>${i.serial}</td><td>${i.equipamento}</td><td>${i.marca}</td><td>${i.setor}</td><td>${i.responsavel}</td><td>${i.telefone}</td></tr>`;
+            // Tabela Funcionários
+            const tbodyFunc = document.querySelector('#tabelaFuncionarios tbody');
+            tbodyFunc.innerHTML = '';
+            funcionarios.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${item.nome}</td><td>${item.unidade}</td><td>${item.setor}</td><td>${item.telefone}</td>`;
+                tbodyFunc.appendChild(tr);
             });
-        }
 
-        function alterarStatus(id, novoStatus) {
-            const chamado = chamados.find(c => c.id === id);
-            if (chamado) {
-                chamado.status = novoStatus;
-                if (novoStatus === 'encerrado') {
-                    // Mensagem elegante centralizada para encerramento de chamado
-                    mostrarToast("Chamado Encerrado!", "O atendimento foi concluído com sucesso e o status atualizado no sistema.");
-                }
-                atualizarTabelaChamados();
-            }
-        }
-
-        function avaliarChamado(id, tipo) {
-            const chamado = chamados.find(c => c.id === id);
-            if (chamado) {
-                chamado.avaliacao = tipo;
-                mostrarToast("Avaliação Registrada", tipo === 'feliz' ? "Muito obrigado pelo seu feedback positivo! 😊" : "Agradecemos sua avaliação. Continuaremos empenhados em melhorar nosso suporte. 😢");
-                atualizarTabelaChamados();
-            }
-        }
-
-        function atualizarTabelaChamados() {
-            const tbody = document.querySelector('#tabelaChamados tbody');
-            tbody.innerHTML = '';
-
-            chamados.forEach(c => {
-                let badgeClass = '';
-                let statusText = '';
-                if (c.status === 'aberto') {
-                    badgeClass = 'badge-aberto';
-                    statusText = 'Aberto';
-                } else if (c.status === 'andamento') {
-                    badgeClass = 'badge-andamento';
-                    statusText = 'Em Andamento';
-                } else if (c.status === 'encerrado') {
-                    badgeClass = 'badge-encerrado';
-                    statusText = 'Encerrado';
-                }
+            // Tabela Chamados (Atualizada com colunas Nome, Setor e Telefone do Solicitante)
+            const tbodyCh = document.querySelector('#tabelaChamados tbody');
+            tbodyCh.innerHTML = '';
+            chamados.forEach(ch => {
+                let badgeClass = 'badge-aberto';
+                if (ch.status === 'andamento') badgeClass = 'badge-andamento';
+                if (ch.status === 'encerrado') badgeClass = 'badge-encerrado';
 
                 let acoesHtml = '';
                 if (currentUser === 'admin' || currentUser === 'tecnico') {
                     acoesHtml += `
-                        <select onchange="alterarStatus(${c.id}, this.value)" style="padding: 6px; font-size: 0.85rem; border-radius: 4px;">
-                            <option value="aberto" ${c.status==='aberto'?'selected':''}>Aberto</option>
-                            <option value="andamento" ${c.status==='andamento'?'selected':''}>Em Andamento</option>
-                            <option value="encerrado" ${c.status==='encerrado'?'selected':''}>Encerrado</option>
+                        <select onchange="mudarStatusChamado(${ch.id}, this.value)" style="padding: 4px; font-size: 0.8rem; border-radius: 4px;">
+                            <option value="aberto" ${ch.status === 'aberto' ? 'selected' : ''}>Aberto</option>
+                            <option value="andamento" ${ch.status === 'andamento' ? 'selected' : ''}>Em Andamento</option>
+                            <option value="encerrado" ${ch.status === 'encerrado' ? 'selected' : ''}>Encerrado</option>
                         </select>
                     `;
-                }
-
-                if (c.status === 'encerrado') {
-                    if (c.avaliacao) {
-                        acoesHtml += `<br><small>Avaliação: ${c.avaliacao === 'feliz' ? '😊 Feliz' : '😢 Triste'}</small>`;
+                } else {
+                    if (ch.status === 'encerrado') {
+                        if (ch.avaliacao) {
+                            acoesHtml = `<span style="font-size: 0.85rem; color: #16a34a; font-weight: 600;">Avaliado: ${ch.avaliacao === 'feliz' ? '😊 Satisfeito' : '😞 Insatisfeito'}</span>`;
+                        } else {
+                            acoesHtml = `
+                                <div class="satisfaction-options">
+                                    <button type="button" onclick="avaliarChamado(${ch.id}, 'feliz')" title="Satisfeito">😊</button>
+                                    <button type="button" onclick="avaliarChamado(${ch.id}, 'triste')" title="Insatisfeito">😞</button>
+                                </div>
+                            `;
+                        }
                     } else {
-                        acoesHtml += `
-                            <div class="satisfaction-options" style="margin-top: 5px;">
-                                <small>Pesquisa de Satisfação:</small><br>
-                                <button onclick="avaliarChamado(${c.id}, 'feliz')" title="Satisfeito">😊</button>
-                                <button onclick="avaliarChamado(${c.id}, 'triste')" title="Insatisfeito">😢</button>
-                            </div>
-                        `;
+                        acoesHtml = `<span style="font-size: 0.8rem; color: #64748b;">Aguardando encerramento</span>`;
                     }
                 }
 
-                tbody.innerHTML += `
-                    <tr>
-                        <td>#${c.id}</td>
-                        <td>${c.unidade}</td>
-                        <td>${c.categoria}</td>
-                        <td>${c.descricao}</td>
-                        <td><span class="badge ${badgeClass}">${statusText}</span></td>
-                        <td>${acoesHtml}</td>
-                    </tr>
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>#${ch.id}</td>
+                    <td>${ch.nome}</td>
+                    <td>${ch.setor}</td>
+                    <td>${ch.telefone}</td>
+                    <td>${ch.unidade}</td>
+                    <td>${ch.categoria}</td>
+                    <td>${ch.descricao}</td>
+                    <td><span class="badge ${badgeClass}">${ch.status.toUpperCase()}</span></td>
+                    <td>${acoesHtml}</td>
                 `;
+                tbodyCh.appendChild(tr);
             });
+        }
+
+        // Câmera / Leitor de Código
+        function iniciarScanner(inputId) {
+            targetInputId = inputId;
+            document.getElementById('scanner-modal').style.display = 'flex';
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(stream => {
+                    mediaStream = stream;
+                    const videoElem = document.getElementById('video-scanner');
+                    videoElem.srcObject = stream;
+                })
+                .catch(err => {
+                    mostrarToast('Câmera Indisponível', 'Não foi possível acessar a câmera do dispositivo.');
+                    fecharScanner();
+                });
+        }
+
+        function fecharScanner() {
+            document.getElementById('scanner-modal').style.display = 'none';
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
         }
     </script>
 </body>
