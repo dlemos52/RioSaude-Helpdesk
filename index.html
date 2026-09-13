@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helpdesk - RIOSAÚDE (GLPI Style)</title>
+    <style>
+        :root {
+            --primary-color: #0c4a6e;
+            --secondary-color: #0284c7;
+            --accent-color: #f0f9ff;
+            --text-color: #334155;
+            --border-color: #cbd5e1;
+            --danger: #dc2626;
+            --warning: #ea580c;
+            --success: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        /* Estilos da Tela de Login */
+        #login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 40px);
+            background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 100%);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            background: #0c4a6e;
+            padding: 10px;
+        }
+
+        .login-card h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Melhoria de Inputs para Dispositivos Móveis (tamanho de toque adequado) */
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #fff;
+        }
+
+        .input-with-action {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-scan {
+            background-color: #0284c7;
+            white-space: nowrap;
+            width: auto;
+        }
+
+        .credentials-hint {
+            margin-top: 15px;
+            font-size: 0.75rem;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: left;
+        }
+
+        /* Layout do Sistema Interno */
+        #app-screen {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        header .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            padding: 2px;
+            object-fit: contain;
+        }
+
+        header h1 {
+            font-size: 1.1rem;
+        }
+
+        header small {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* Botão Moderno de Menu Superior Direito para Celular */
+        .modern-menu-toggle {
+            display: none;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+        }
+        .modern-menu-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Dropdown de Menu Moderno para Celular */
+        .mobile-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 70px;
+            right: 15px;
+            background: white;
+            width: 260px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+            z-index: 1100;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            animation: fadeInMenu 0.2s ease-in-out;
+        }
+
+        @keyframes fadeInMenu {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mobile-dropdown-menu button {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .mobile-dropdown-menu button:hover, .mobile-dropdown-menu button:active {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .modern-menu-toggle {
+                display: flex;
+            }
+            .user-info span {
+                display: none; /* Oculta o texto do usuário no topo mobile para ganhar espaço */
+            }
+            .desktop-nav-hide {
+                display: none !important;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border-top: 4px solid var(--secondary-color);
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .card h4 {
+            font-size: 1rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* Tabelas Responsivas com Scroll Horizontal */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        table th, table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        table th {
+            background-color: #f8fafc;
+            color: var(--primary-color);
+        }
+
+        /* Badges de Status */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+        }
+        .badge-aberto { background-color: var(--danger); }
+        .badge-andamento { background-color: var(--warning); }
+        .badge-encerrado { background-color: var(--success); }
+
+        /* Rodapé Fixo */
+        footer {
+            background-color: #1e293b;
+            color: #94a3b8;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8rem;
+            margin-top: auto;
+        }
+
+        /* Grid Otimizada para Celular/Desktop */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+        }
+
+        .satisfaction-options button {
+            background: none;
+            border: 2px solid var(--border-color);
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-right: 5px;
+            transition: all 0.2s;
+        }
+
+        .satisfaction-options button:hover {
+            border-color: var(--primary-color);
+            background: #f0fdf4;
+        }
+
+        /* Modal Centralizado para Mensagens Elegantes de Sucesso */
+        #toast-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeInToast 0.2s ease-out;
+        }
+
+        @keyframes fadeInToast {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .toast-card {
+            background: white;
+            padding: 25px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            border-top: 5px solid var(--success);
+        }
+
+        .toast-card h3 {
+            color: var(--success);
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .toast-card p {
+            color: var(--text-color);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        /* Modal para Leitor de Código de Câmera */
+        #scanner-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        #scanner-modal video {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MODAL DE MENSAGEM ELEGANTE AO CENTRO (TOAST / ALERTA) -->
+    <div id="toast-modal">
+        <div class="toast-card">
+            <h3 id="toast-title">Sucesso!</h3>
+            <p id="toast-message">Operação realizada com êxito no sistema.</p>
+            <button type="button" class="btn" onclick="fecharToast()">Continuar</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE SCANNER DE CÂMERA -->
+    <div id="scanner-modal">
+        <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; max-width: 450px; width: 100%;">
+            <h3>Leitor de Código de Barras</h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 15px;">Aponte a câmera para o código do Patrimônio ou Serial</p>
+            <video id="video-scanner" autoplay playsinline></video>
+            <div style="margin-top: 15px;">
+                <button type="button" class="btn" style="background: #ef4444;" onclick="fecharScanner()">Fechar Câmera</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DE LOGIN -->
+    <main>
+        <div id="login-screen">
+            <div class="login-card">
+                <img src="RIOSAUDE.png" alt="Logo Riosaúde" onerror="this.src='https://via.placeholder.com/120?text=RIOSAUDE'">
+                <h2>Helpdesk - Riosaúde</h2>
+                <form id="loginForm" onsubmit="realizarLogin(event)">
+                    <div class="form-group">
+                        <label for="usuario">Usuário</label>
+                        <input type="text" id="usuario" required placeholder="admin, tecnico ou funcionario">
+                    </div>
+                    <div class="form-group">
+                        <label for="senha">Senha</label>
+                        <input type="password" id="senha" required placeholder="Senha (123)">
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">Entrar</button>
+                    <div class="credentials-hint">
+                        <strong>Acessos de Teste (Senha: 123):</strong><br>
+                        • <code>admin</code> (Acesso Total)<br>
+                        • <code>tecnico</code> (Chamados, Cadastros e Inventário)<br>
+                        • <code>funcionario</code> (Abertura e Consulta)
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- TELA DO SISTEMA INTERNO -->
+        <div id="app-screen">
+            <header>
+                <div class="logo-area">
+                    <img src="RIOSAUDE.png" alt="Logo" onerror="this.src='https://via.placeholder.com/45?text=RS'">
+                    <div>
+                        <h1>Helpdesk Hospitalar</h1>
+                        <small>Riosaúde - Gestão de Atendimento</small>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="user-info">
+                        <span id="user-display">Perfil: Admin</span>
+                        <button class="logout-btn" onclick="realizarLogout()">Sair</button>
+                    </div>
+                    <!-- Botão Moderno de Menu para Celular (Canto Superior Direito) -->
+                    <button class="modern-menu-toggle" id="btnMenuMobile" onclick="toggleMenuMobile()" title="Menu de Navegação">
+                        ☰
+                    </button>
+                    <!-- Dropdown de Opções Mobile -->
+                    <div id="dropdownMenuMobile" class="mobile-dropdown-menu">
+                        <!-- Preenchido dinamicamente via JS com base no perfil -->
+                    </div>
+                </div>
+            </header>
+
+            <div class="container">
+                
+                <!-- PAINEL ADMINISTRADOR -->
+                <div id="panel-admin" class="panel-section card">
+                    <h3>Painel Administrativo - Visão Global</h3>
+                    <p>Bem-vindo, Administrador. Acesso irrestrito a todas as ferramentas de gestão, inventário e controle de unidades.</p>
+                </div>
+
+                <!-- PAINEL TÉCNICO -->
+                <div id="panel-tecnico" class="panel-section card" style="display:none;">
+                    <h3>Painel Técnico - Unidades de Saúde</h3>
+                    <p>Gerencie chamados de suporte técnico, cadastros de funcionários e o inventário de equipamentos.</p>
+                </div>
+
+                <!-- PAINEL FUNCIONÁRIO -->
+                <div id="panel-funcionario" class="panel-section card" style="display:none;">
+                    <h3>Área do Funcionário</h3>
+                    <p>Abra chamados para suporte em sua unidade e acompanhe o status em tempo real.</p>
+                </div>
+
+                <!-- MÓDULO: CADASTRO DE INVENTÁRIO (Admin e Técnico) -->
+                <div id="modulo-inventario" class="card">
+                    <h3>Cadastro de Inventário de Equipamentos</h3>
+                    <form id="formInventario" onsubmit="cadastrarInventario(event)">
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>Tipo de Equipamento</label>
+                                <select id="invEquipamento" onchange="atualizarMarcas()" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="Desktop">Desktop</option>
+                                    <option value="Notebook">Notebook</option>
+                                    <option value="Impressoora">Impressora</option>
+                                    <option value="Monitor">Monitor</option>
+                                    <option value="Teclado">Teclado</option>
+                                    <option value="Mouse">Mouse</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Marca</label>
+                                <select id="invMarca" required>
+                                    <option value="">Selecione o equipamento primeiro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Setor</label>
+                                <select id="invSetor" required>
+                                    <option value="">Selecione o Setor</option>
+                                    <option value="Recepção da Emergência">Recepção da Emergência</option>
+                                    <option value="NIR">NIR</option>
+                                    <option value="Diretoria">Diretoria</option>
+                                    <option value="Cegonha">Cegonha</option>
+                                    <option value="Medicação">Medicação</option>
+                                    <option value="Sala Médica 1">Sala Médica 1</option>
+                                    <option value="Sala Médica 2">Sala Médica 2</option>
+                                    <option value="Obstétrica">Obstétrica</option>
+                                    <option value="Acalanto">Acalanto</option>
+                                    <option value="Enfermagem">Enfermagem</option>
+                                    <option value="Expurgo">Expurgo</option>
+                                    <option value="Segurança">Segurança</option>
+                                    <option value="Ambulatório">Ambulatório</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>Nº Patrimônio (Máx. 4 dígitos)</label>
+                                <div class="input-with-action">
+                                    <input type="text" id="invPatrimonio" maxlength="4" required placeholder="Ex: A123">
+                                    <button type="button" class="btn btn-scan" onclick="iniciarScanner('invPatrimonio')" title="Ler com Câmera">📷 Câmera</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Nº Serial (Máx. 5 dígitos)</label>
+                                <div class="input-with-action">
+                                    <input type="text" id="invSerial" maxlength="5" required placeholder="Ex: B7890">
+                                    <button type="button" class="btn btn-scan" onclick="iniciarScanner('invSerial')" title="Ler com Câmera">📷 Câmera</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Telefone</label>
+                                <input type="text" id="invTelefone" required placeholder="(21) 99999-9999">
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Responsável</label>
+                                <input type="text" id="invResponsavel" required placeholder="Nome do responsável">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn" style="width: auto; padding: 12px 24px;">Cadastrar no Inventário</button>
+                    </form>
+                    <div class="table-responsive">
+                        <h4 style="margin-top: 15px;">Equipamentos no Inventário</h4>
+                        <table id="tabelaInventario">
+                            <thead>
+                                <tr>
+                                    <th>Patrimônio</th>
+                                    <th>Serial</th>
+                                    <th>Equipamento</th>
+                                    <th>Marca</th>
+                                    <th>Setor</th>
+                                    <th>Responsável</th>
+                                    <th>Telefone</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dinâmico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- MÓDULO: CADASTRO DE FUNCIONÁRIOS (Admin e Técnico) -->
+                <div id="modulo-cadastro" class="card">
+                    <h3>Cadastro de Funcionários / Colaboradores</h3>
+                    <form id="formFuncionario" onsubmit="cadastrarFuncionario(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Nome Completo</label>
+                                <input type="text" id="funcNome" required placeholder="Ex: Dr. Carlos Silva">
+                            </div>
+                            <div class="form-group">
+                                <label>Setor / Unidade (Hospital ou Maternidade)</label>
+                                <input type="text" id="funcSetor" required placeholder="Ex: Maternidade - UTI Neo">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn" style="width: auto; padding: 12px 24px;">Cadastrar Funcionário</button>
+                    </form>
+                    <div class="table-responsive">
+                        <h4 style="margin-top: 15px;">Funcionários Cadastrados</h4>
+                        <table id="tabelaFuncionarios">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Setor/Unidade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dinâmico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- MÓDULO: ABERTURA DE CHAMADOS (Todos podem abrir) -->
+                <div id="modulo-abertura" class="card">
+                    <h3>Abrir Novo Chamado de Suporte</h3>
+                    <form id="formChamado" onsubmit="abrirChamado(event)">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Unidade Hospitalar / Maternidade</label>
+                                <select id="chamadoUnidade" required>
+                                    <option value="">Selecione o Hospital / Maternidade</option>
+                                    <option value="Hospital Municipal Souza Aguiar">Hospital Municipal Souza Aguiar</option>
+                                    <option value="Hospital Municipal Miguel Couto">Hospital Municipal Miguel Couto</option>
+                                    <option value="Maternidade Carmela Dutra">Maternidade Carmela Dutra</option>
+                                    <option value="Maternidade Fernando Magalhães">Maternidade Fernando Magalhães</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Categoria do Problema</label>
+                                <select id="chamadoCategoria" required>
+                                    <option value="Prontuário Eletrônico / Sistema">Prontuário Eletrônico / Sistema</option>
+                                    <option value="Equipamento Médico / Hardware">Equipamento Médico / Hardware</option>
+                                    <option value="Rede / Internet">Rede / Internet</option>
+                                    <option value="Manutenção Predial">Manutenção Predial</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição Detalhada do Ocorrido</label>
+                            <textarea id="chamadoDescricao" rows="3" required placeholder="Descreva o problema ocorrido..."></textarea>
+                        </div>
+                        <button type="submit" class="btn" style="width: auto; padding: 12px 24px;">Enviar Chamado</button>
+                    </form>
+                </div>
+
+                <!-- MÓDULO: LISTAGEM E ACOMPANHAMENTO DE CHAMADOS -->
+                <div class="card">
+                    <h3>Acompanhamento de Chamados</h3>
+                    <div class="table-responsive">
+                        <table id="tabelaChamados">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Unidade</th>
+                                    <th>Categoria</th>
+                                    <th>Descrição</th>
+                                    <th>Status</th>
+                                    <th>Ações / Satisfação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Inserido dinamicamente via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- RODAPÉ ATUALIZADO CONFORME SOLICITADO -->
+    <footer>
+        Direitos Reservado Demilson Lemos @2026 Contato: 21990288979 - <span id="live-datetime"></span>
+    </footer>
+
+    <script>
+        // Banco de Dados Simulado em Memória
+        let currentUser = null;
+        let targetInputId = null;
+        let mediaStream = null;
+
+        let chamados = [
+            { id: 1, unidade: "Maternidade Carmela Dutra", categoria: "Prontuário Eletrônico", descricao: "Erro ao salvar triagem obstétrica.", status: "aberto", avaliacao: null },
+            { id: 2, unidade: "Hospital Municipal Souza Aguiar", categoria: "Rede / Internet", descricao: "Queda de conexão no posto de enfermagem.", status: "andamento", avaliacao: null },
+            { id: 3, unidade: "Hospital Municipal Miguel Couto", categoria: "Equipamento Médico", descricao: "Manutenção preventiva em monitor multiparamétrico.", status: "encerrado", avaliacao: "feliz" }
+        ];
+        let funcionarios = [
+            { nome: "Enfermeira Ana Paula", setor: "Maternidade Carmela Dutra" },
+            { nome: "Dr. Roberto Mendes", setor: "Hospital Souza Aguiar" }
+        ];
+        let inventario = [
+            { patrimonio: "P01", serial: "S1234", equipamento: "Desktop", marca: "Dell", setor: "Recepção da Emergência", responsavel: "Carlos Alberto", telefone: "21 98888-1111" }
+        ];
+
+        const marcasGerais = ["Dell", "Positivo", "Daten", "Lenovo", "LG", "AOC", "Philips", "Samsung", "TCE", "Panasonic", "Sony", "Vizzion", "Itautec", "Outros"];
+        const marcasImpressora = ["Brother", "HP", "Lexmark", "Pantum", "Xerox", "Okidata", "Outros"];
+
+        // Relógio e Data em Tempo Real no Rodapé
+        function atualizarRelogio() {
+            const agora = new Date();
+            const dia = String(agora.getDate()).padStart(2, '0');
+            const mes = String(agora.getMonth() + 1).padStart(2, '0');
+            const ano = agora.getFullYear();
+            const horas = String(agora.getHours()).padStart(2, '0');
+            const minutos = String(agora.getMinutes()).padStart(2, '0');
+            const segundos = String(agora.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('live-datetime').innerText = `${dia}/${mes}/${ano} ${horas}:${minutos}:${segundos}`;
+        }
+        setInterval(atualizarRelogio, 1000);
+        atualizarRelogio();
+
+        // Funções do Modal Elegante de Toast Central
+        function mostrarToast(titulo, mensagem) {
+            document.getElementById('toast-title').innerText = titulo;
+            document.getElementById('toast-message').innerText = mensagem;
+            document.getElementById('toast-modal').style.display = 'flex';
+        }
+
+        function fecharToast() {
+            document.getElementById('toast-modal').style.display = 'none';
+        }
+
+        // Menu Moderno Dropdown no Celular
+        function toggleMenuMobile() {
+            const dropdown = document.getElementById('dropdownMenuMobile');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
+
+        // Fechar menu dropdown ao clicar fora em telas mobile
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('dropdownMenuMobile');
+            const btnMenu = document.getElementById('btnMenuMobile');
+            if (dropdown && btnMenu && !dropdown.contains(e.target) && !btnMenu.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        function construirMenuMobileDropdown() {
+            const dropdown = document.getElementById('dropdownMenuMobile');
+            dropdown.innerHTML = '';
+
+            let itens = [];
+            if (currentUser === 'admin') {
+                itens = [
+                    { texto: '📋 Painel Administrativo', acao: () => rolarParaSecao('panel-admin') },
+                    { texto: '💻 Cadastrar Inventário', acao: () => rolarParaSecao('modulo-inventario') },
+                    { texto: '👥 Cadastrar Funcionário', acao: () => rolarParaSecao('modulo-cadastro') },
+                    { texto: '🛠️ Abrir Novo Chamado', acao: () => rolarParaSecao('modulo-abertura') }
+                ];
+            } else if (currentUser === 'tecnico') {
+                itens = [
+                    { texto: '📋 Painel Técnico', acao: () => rolarParaSecao('panel-tecnico') },
+                    { texto: '💻 Cadastrar Inventário', acao: () => rolarParaSecao('modulo-inventario') },
+                    { texto: '👥 Cadastrar Funcionário', acao: () => rolarParaSecao('modulo-cadastro') },
+                    { texto: '🛠️ Abrir Novo Chamado', acao: () => rolarParaSecao('modulo-abertura') }
+                ];
+            } else {
+                itens = [
+                    { texto: '📋 Área do Funcionário', acao: () => rolarParaSecao('panel-funcionario') },
+                    { texto: '🛠️ Abrir Novo Chamado', acao: () => rolarParaSecao('modulo-abertura') }
+                ];
+            }
+
+            itens.forEach(item => {
+                const btn = document.createElement('button');
+                btn.innerHTML = item.texto;
+                btn.onclick = () => {
+                    item.acao();
+                    dropdown.style.display = 'none';
+                };
+                dropdown.appendChild(btn);
+            });
+        }
+
+        function rolarParaSecao(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function atualizarMarcas() {
+            const tipo = document.getElementById('invEquipamento').value;
+            const selectMarca = document.getElementById('invMarca');
+            selectMarca.innerHTML = '<option value="">Selecione a Marca</option>';
+
+            let lista = [];
+            if (tipo === "Desktop" || tipo === "Notebook" || tipo === "Monitor" || tipo === "Teclado" || tipo === "Mouse") {
+                lista = marcasGerais;
+            } else if (tipo === "Impressoora") {
+                lista = marcasImpressora;
+            }
+
+            lista.forEach(m => {
+                selectMarca.innerHTML += `<option value="${m}">${m}</option>`;
+            });
+        }
+
+        // Leitor de Código de Barras via Câmera do Celular
+        async function iniciarScanner(inputId) {
+            targetInputId = inputId;
+            document.getElementById('scanner-modal').style.display = 'flex';
+            
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                const videoElement = document.getElementById('video-scanner');
+                videoElement.srcObject = mediaStream;
+
+                if (window.BarcodeDetector) {
+                    const barcodeDetector = new BarcodeDetector({ formats: ['code_128', 'qr_code', 'ean_13'] });
+                    const detectLoop = async () => {
+                        if (document.getElementById('scanner-modal').style.display === 'flex') {
+                            try {
+                                const barcodes = await barcodeDetector.detect(videoElement);
+                                if (barcodes.length > 0) {
+                                    const valorLido = barcodes[0].rawValue;
+                                    document.getElementById(targetInputId).value = valorLido.slice(0, targetInputId === 'invPatrimonio' ? 4 : 5);
+                                    fecharScanner();
+                                    return;
+                                }
+                            } catch(e) {}
+                            requestAnimationFrame(detectLoop);
+                        }
+                    };
+                    detectLoop();
+                }
+            } catch (err) {
+                alert("Câmera indisponível ou permissão negada. Você pode digitar manualmente.");
+                fecharScanner();
+            }
+        }
+
+        function fecharScanner() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            document.getElementById('scanner-modal').style.display = 'none';
+        }
+
+        function realizarLogin(event) {
+            event.preventDefault();
+            const usuarioInput = document.getElementById('usuario').value.trim().toLowerCase();
+            const senhaInput = document.getElementById('senha').value;
+
+            if (senhaInput !== "123") {
+                alert("Senha incorreta! Utilize '123' para os testes.");
+                return;
+            }
+
+            if (usuarioInput === 'admin' || usuarioInput === 'tecnico' || usuarioInput === 'funcionario') {
+                currentUser = usuarioInput;
+                iniciarSistema();
+            } else {
+                alert("Usuário não encontrado! Use: admin, tecnico ou funcionario");
+            }
+        }
+
+        function iniciarSistema() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-screen').style.display = 'flex';
+
+            document.getElementById('panel-admin').style.display = (currentUser === 'admin') ? 'block' : 'none';
+            document.getElementById('panel-tecnico').style.display = (currentUser === 'tecnico') ? 'block' : 'none';
+            document.getElementById('panel-funcionario').style.display = (currentUser === 'funcionario') ? 'block' : 'none';
+
+            if (currentUser === 'admin' || currentUser === 'tecnico') {
+                document.getElementById('modulo-cadastro').style.display = 'block';
+                document.getElementById('modulo-inventario').style.display = 'block';
+                atualizarTabelaFuncionarios();
+                atualizarTabelaInventario();
+            } else {
+                document.getElementById('modulo-cadastro').style.display = 'none';
+                document.getElementById('modulo-inventario').style.display = 'none';
+            }
+
+            document.getElementById('user-display').innerText = `Perfil: ${currentUser.toUpperCase()}`;
+            construirMenuMobileDropdown();
+            atualizarTabelaChamados();
+        }
+
+        function realizarLogout() {
+            currentUser = null;
+            document.getElementById('loginForm').reset();
+            document.getElementById('app-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+        }
+
+        function abrirChamado(event) {
+            event.preventDefault();
+            const unidade = document.getElementById('chamadoUnidade').value;
+            const categoria = document.getElementById('chamadoCategoria').value;
+            const descricao = document.getElementById('chamadoDescricao').value;
+
+            const novoChamado = {
+                id: chamados.length + 1,
+                unidade,
+                categoria,
+                descricao,
+                status: 'aberto',
+                avaliacao: null
+            };
+
+            chamados.push(novoChamado);
+            document.getElementById('formChamado').reset();
+            
+            // Mensagem elegante centralizada para abertura de chamado
+            mostrarToast("Chamado Registrado!", "Sua solicitação foi encaminhada com sucesso para nossa equipe técnica.");
+            atualizarTabelaChamados();
+        }
+
+        function cadastrarFuncionario(event) {
+            event.preventDefault();
+            const nome = document.getElementById('funcNome').value;
+            const setor = document.getElementById('funcSetor').value;
+
+            funcionarios.push({ nome, setor });
+            document.getElementById('formFuncionario').reset();
+            
+            // Mensagem elegante centralizada para cadastro
+            mostrarToast("Cadastro Concluído!", "O colaborador foi registrado com sucesso no sistema da Riosaúde.");
+            atualizarTabelaFuncionarios();
+        }
+
+        function cadastrarInventario(event) {
+            event.preventDefault();
+            const patrimonio = document.getElementById('invPatrimonio').value.trim();
+            const serial = document.getElementById('invSerial').value.trim();
+            const equipamento = document.getElementById('invEquipamento').value;
+            const marca = document.getElementById('invMarca').value;
+            const setor = document.getElementById('invSetor').value;
+            const responsavel = document.getElementById('invResponsavel').value;
+            const telefone = document.getElementById('invTelefone').value;
+
+            if (patrimonio.length > 4) {
+                alert("O Patrimônio deve ter no máximo 4 caracteres.");
+                return;
+            }
+            if (serial.length > 5) {
+                alert("O Serial deve ter no máximo 5 caracteres.");
+                return;
+            }
+
+            inventario.push({ patrimonio, serial, equipamento, marca, setor, responsavel, telefone });
+            document.getElementById('formInventario').reset();
+            document.getElementById('invMarca').innerHTML = '<option value="">Selecione o equipamento primeiro</option>';
+            
+            // Mensagem elegante centralizada para inventário
+            mostrarToast("Equipamento Salvo!", "O ativo tecnológico foi incorporado com sucesso ao inventário hospitalar.");
+            atualizarTabelaInventario();
+        }
+
+        function atualizarTabelaFuncionarios() {
+            const tbody = document.querySelector('#tabelaFuncionarios tbody');
+            tbody.innerHTML = '';
+            funcionarios.forEach(f => {
+                tbody.innerHTML += `<tr><td>${f.nome}</td><td>${f.setor}</td></tr>`;
+            });
+        }
+
+        function atualizarTabelaInventario() {
+            const tbody = document.querySelector('#tabelaInventario tbody');
+            tbody.innerHTML = '';
+            inventario.forEach(i => {
+                tbody.innerHTML += `<tr><td><strong>${i.patrimonio}</strong></td><td>${i.serial}</td><td>${i.equipamento}</td><td>${i.marca}</td><td>${i.setor}</td><td>${i.responsavel}</td><td>${i.telefone}</td></tr>`;
+            });
+        }
+
+        function alterarStatus(id, novoStatus) {
+            const chamado = chamados.find(c => c.id === id);
+            if (chamado) {
+                chamado.status = novoStatus;
+                if (novoStatus === 'encerrado') {
+                    // Mensagem elegante centralizada para encerramento de chamado
+                    mostrarToast("Chamado Encerrado!", "O atendimento foi concluído com sucesso e o status atualizado no sistema.");
+                }
+                atualizarTabelaChamados();
+            }
+        }
+
+        function avaliarChamado(id, tipo) {
+            const chamado = chamados.find(c => c.id === id);
+            if (chamado) {
+                chamado.avaliacao = tipo;
+                mostrarToast("Avaliação Registrada", tipo === 'feliz' ? "Muito obrigado pelo seu feedback positivo! 😊" : "Agradecemos sua avaliação. Continuaremos empenhados em melhorar nosso suporte. 😢");
+                atualizarTabelaChamados();
+            }
+        }
+
+        function atualizarTabelaChamados() {
+            const tbody = document.querySelector('#tabelaChamados tbody');
+            tbody.innerHTML = '';
+
+            chamados.forEach(c => {
+                let badgeClass = '';
+                let statusText = '';
+                if (c.status === 'aberto') {
+                    badgeClass = 'badge-aberto';
+                    statusText = 'Aberto';
+                } else if (c.status === 'andamento') {
+                    badgeClass = 'badge-andamento';
+                    statusText = 'Em Andamento';
+                } else if (c.status === 'encerrado') {
+                    badgeClass = 'badge-encerrado';
+                    statusText = 'Encerrado';
+                }
+
+                let acoesHtml = '';
+                if (currentUser === 'admin' || currentUser === 'tecnico') {
+                    acoesHtml += `
+                        <select onchange="alterarStatus(${c.id}, this.value)" style="padding: 6px; font-size: 0.85rem; border-radius: 4px;">
+                            <option value="aberto" ${c.status==='aberto'?'selected':''}>Aberto</option>
+                            <option value="andamento" ${c.status==='andamento'?'selected':''}>Em Andamento</option>
+                            <option value="encerrado" ${c.status==='encerrado'?'selected':''}>Encerrado</option>
+                        </select>
+                    `;
+                }
+
+                if (c.status === 'encerrado') {
+                    if (c.avaliacao) {
+                        acoesHtml += `<br><small>Avaliação: ${c.avaliacao === 'feliz' ? '😊 Feliz' : '😢 Triste'}</small>`;
+                    } else {
+                        acoesHtml += `
+                            <div class="satisfaction-options" style="margin-top: 5px;">
+                                <small>Pesquisa de Satisfação:</small><br>
+                                <button onclick="avaliarChamado(${c.id}, 'feliz')" title="Satisfeito">😊</button>
+                                <button onclick="avaliarChamado(${c.id}, 'triste')" title="Insatisfeito">😢</button>
+                            </div>
+                        `;
+                    }
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${c.id}</td>
+                        <td>${c.unidade}</td>
+                        <td>${c.categoria}</td>
+                        <td>${c.descricao}</td>
+                        <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                        <td>${acoesHtml}</td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
