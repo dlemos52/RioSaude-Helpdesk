@@ -17,7 +17,7 @@
         }
 
         body {
-            background-color: #f8fafc;
+            background-color: #6490b2;
             color: var(--text-color);
             display: flex;
             flex-direction: column;
@@ -36,10 +36,11 @@
             min-height: calc(100vh - 40px);
             background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 100%);
             padding: 20px;
+            
         }
 
         .login-card {
-            background: white;
+            background: rgb(115, 194, 236);
             padding: 30px 20px;
             border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
@@ -54,7 +55,7 @@
             object-fit: contain;
             margin-bottom: 20px;
             border-radius: 50%;
-            background: #0c4a6e;
+            background: rgb(115, 194, 236);
             padding: 10px;
         }
 
@@ -390,8 +391,8 @@
         .badge-encerrado { background-color: var(--success); }
 
         footer {
-            background-color: #1e293b;
-            color: #94a3b8;
+            background-color: #171717;
+            color: #cfddf0;
             text-align: center;
             padding: 15px;
             font-size: 0.8rem;
@@ -534,3 +535,13 @@ select:disabled {
     cursor: not-allowed;
     background-color: #f1f5f9;
 }
+
+#login-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 40px);
+    background: url('../assets/img/tela-fundo4.jpg') no-repeat center center fixed;
+    background-size: cover;
+    padding: 20px;
+}       
