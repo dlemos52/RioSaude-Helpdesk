@@ -1,0 +1,686 @@
+let currentUser = null;
+        let currentUnit = null;
+
+        // Unidades oficiais da rede municipal consultadas no portal da Secretaria Municipal de Saúde.
+        const unidadesSaude = {
+            'Hospitais Municipais': [
+                'Hospital Municipal Souza Aguiar',
+                'Hospital Municipal Miguel Couto',
+                'Hospital Municipal Salgado Filho',
+                'Hospital Municipal Lourenço Jorge',
+                'Hospital Municipal Pedro II',
+                'Hospital Municipal Evandro Freire',
+                'Hospital Municipal Rocha Faria',
+                'Hospital Municipal Rocha Maia',
+                'Hospital Municipal Francisco da Silva Telles',
+                'Hospital Municipal Albert Schweitzer',
+                'Hospital Municipal Paulino Werneck',
+                'Hospital Municipal Jurandir Manfredini'
+            ],
+            'Maternidades': [
+                'Hospital Maternidade Fernando Magalhães',
+                'Hospital Maternidade Carmela Dutra',
+                'Hospital Maternidade Herculano Pinheiro',
+                'Hospital Maternidade Alexander Fleming',
+                'Hospital Maternidade Maria Amélia Buarque de Hollanda',
+                'Maternidade Leila Diniz',
+                'Maternidade da Rocinha',
+                'Hospital Maternidade Paulino Werneck',
+                'Hospital da Mulher Mariska Ribeiro'
+            ],
+            'UPAs 24 Horas': [
+                'UPA Rocinha',
+                'UPA Complexo do Alemão',
+                'UPA Manguinhos',
+                'UPA Del Castilho',
+                'UPA Engenho de Dentro',
+                'UPA Madureira',
+                'UPA Costa Barros',
+                'UPA Rocha Miranda',
+                'UPA Cidade de Deus',
+                'UPA Vila Kennedy',
+                'UPA Senador Camará',
+                'UPA Magalhães Bastos',
+                'UPA Sepetiba',
+                'UPA Paciência',
+                'UPA João XXIII (Santa Cruz)'
+            ],
+            'CER / Emergência': [
+                'CER Barra da Tijuca',
+                'CER Campo Grande',
+                'CER Centro',
+                'CER Leblon',
+                'CER Ilha',
+                'CER Santa Cruz'
+            ]
+        };
+
+        function listaUnidades() {
+            return Object.values(unidadesSaude).flat();
+        }
+
+        function preencherSelectUnidades(id, incluirTodas = false) {
+            const select = document.getElementById(id);
+            if (!select) return;
+            const valorAtual = select.value;
+            select.innerHTML = `<option value=>${incluirTodas ? 'Selecione a unidade...' : 'Selecione...'}</option>`;
+            if (incluirTodas) {
+                const optTodas = document.createElement('option');
+                optTodas.value = '__TODAS__';
+                optTodas.textContent = 'Todas as unidades (visão administrativa)';
+                select.appendChild(optTodas);
+            }
+            Object.entries(unidadesSaude).forEach(([grupo, unidades]) => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = grupo;
+                unidades.forEach(unidade => {
+                    const opt = document.createElement('option');
+                    opt.value = unidade;
+                    opt.textContent = unidade;
+                    optgroup.appendChild(opt);
+                });
+                select.appendChild(optgroup);
+            });
+            if ([...select.options].some(o => o.value === valorAtual)) select.value = valorAtual;
+        }
+
+        function inicializarUnidades() {
+            preencherSelectUnidades('loginUnidade');
+            preencherSelectUnidades('funcUnidade');
+            preencherSelectUnidades('chamadoUnidade');
+        }
+
+        function unidadeAtualPermiteRegistro(unidade) {
+            return currentUnit === '__TODAS__' || currentUnit === unidade;
+        }
+
+        function chamadosDaUnidadeAtual() {
+            if (!currentUnit || currentUnit === '__TODAS__') return chamados;
+            return chamados.filter(c => c.unidade === currentUnit);
+        }
+
+        function funcionariosDaUnidadeAtual() {
+            if (!currentUnit || currentUnit === '__TODAS__') return funcionarios;
+            return funcionarios.filter(f => f.unidade === currentUnit);
+        }
+        let targetInputId = null;
+        let mediaStream = null;
+        let termoBuscaGlobal = "";
+        let chamadoParaExcluirId = null; // Variável para armazenar o ID alvo da exclusão
+
+        let chamados = [
+            { id: 1, nome: "Enfermeira Ana Paula", setor: "Enfermagem", telefone: "(21) 97777-1111", unidade: "Hospital Maternidade Carmela Dutra", categoria: "Prontuário Eletrônico", descricao: "Erro ao salvar triagem obstétrica.", status: "aberto", solucao: "", avaliacao: null },
+            { id: 2, nome: "Dr. Roberto Mendes", setor: "Recepção da Emergência", telefone: "(21) 96666-2222", unidade: "Hospital Municipal Souza Aguiar", categoria: "Rede / Internet", descricao: "Queda de conexão recorrente no posto.", status: "andamento", solucao: "", avaliacao: null },
+            { id: 3, nome: "Carlos Alberto", setor: "Diretoria", telefone: "(21) 98888-3333", unidade: "Hospital Municipal Miguel Couto", categoria: "Equipamento Médico", descricao: "Manutenção preventiva em monitor.", status: "encerrado", solucao: "Substituição do cabo de força danificado e reconfiguração de IP.", avaliacao: "feliz" }
+        ];
+        let funcionarios = [
+            { nome: "Enfermeira Ana Paula", unidade: "Hospital Maternidade Carmela Dutra", setor: "Enfermagem", telefone: "(21) 97777-1111" },
+            { nome: "Dr. Roberto Mendes", unidade: "Hospital Municipal Souza Aguiar", setor: "Recepção da Emergência", telefone: "(21) 96666-2222" },
+            { nome: "Carlos Alberto", unidade: "Hospital Municipal Miguel Couto", setor: "Diretoria", telefone: "(21) 98888-3333" }
+        ];
+        let inventario = [
+            { patrimonio: "P01", serial: "S1234", equipamento: "Desktop", marca: "Dell", setor: "Recepção da Emergência", responsavel: "Carlos Alberto", telefone: "(21) 98888-1111" }
+        ];
+
+        const marcasGerais = ["Dell", "Positivo", "Daten", "Lenovo", "LG", "AOC", "Philips", "Samsung", "TCE", "Panasonic", "Sony", "Vizzion", "Itautec", "Outros"];
+        const marcasImpressora = ["Brother", "HP", "Lexmark", "Pantum", "Xerox", "Okidata", "Outros"];
+
+        function atualizarRelogio() {
+            const agora = new Date();
+            const dia = String(agora.getDate()).padStart(2, '0');
+            const mes = String(agora.getMonth() + 1).padStart(2, '0');
+            const ano = agora.getFullYear();
+            const horas = String(agora.getHours()).padStart(2, '0');
+            const minutos = String(agora.getMinutes()).padStart(2, '0');
+            const segundos = String(agora.getSeconds()).padStart(2, '0');
+            document.getElementById('live-datetime').innerText = `${dia}/${mes}/${ano} ${horas}:${minutos}:${segundos}`;
+        }
+        setInterval(atualizarRelogio, 1000);
+        atualizarRelogio();
+        inicializarUnidades();
+
+        document.getElementById('usuario')?.addEventListener('input', function() {
+            const usuario = this.value.trim().toLowerCase();
+            preencherSelectUnidades('loginUnidade', usuario === 'admin');
+        });
+
+        document.getElementById('loginUnidade')?.addEventListener('change', function() {
+            const unidade = this.value;
+            const usuario = document.getElementById('usuario')?.value.trim().toLowerCase();
+            // Para usuários comuns, a unidade define automaticamente o escopo do sistema.
+            if (usuario !== 'admin') {
+                currentUnit = unidade;
+            }
+        });
+
+        function mostrarToast(titulo, mensagem) {
+            document.getElementById('toast-title').innerText = titulo;
+            document.getElementById('toast-message').innerText = mensagem;
+            document.getElementById('toast-modal').style.display = 'flex';
+        }
+
+        function fecharToast() {
+            document.getElementById('toast-modal').style.display = 'none';
+        }
+
+        function toggleMenuMobile() {
+            const dropdown = document.getElementById('dropdownMenuMobile');
+            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+        }
+
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('dropdownMenuMobile');
+            const btnMenu = document.getElementById('btnMenuMobile');
+            if (dropdown && btnMenu && !dropdown.contains(e.target) && !btnMenu.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        function construirMenuMobileDropdown() {
+            const dropdown = document.getElementById('dropdownMenuMobile');
+            dropdown.innerHTML = '';
+
+            let itens = [];
+            if (currentUser === 'admin') {
+                itens = [
+                    { texto: '📋 Dashboard Administrativo', acao: () => rolarParaSecao('panel-admin') },
+                    { texto: '💻 Cadastrar Inventário', acao: () => rolarParaSecao('modulo-inventario') },
+                    { texto: '👥 Cadastrar Funcionário', acao: () => rolarParaSecao('modulo-cadastro') },
+                    { texto: '🛠️ Abrir Novo Chamado', acao: () => rolarParaSecao('modulo-abertura') }
+                ];
+            } else if (currentUser === 'tecnico') {
+                itens = [
+                    { texto: '📋 Painel Técnico', acao: () => rolarParaSecao('panel-tecnico') },
+                    { texto: '💻 Cadastrar Inventário', acao: () => rolarParaSecao('modulo-inventario') },
+                    { texto: '👥 Cadastrar Funcionário', acao: () => rolarParaSecao('modulo-cadastro') },
+                    { texto: '🛠️ Abrir Novo Chamado', acao: () => rolarParaSecao('modulo-abertura') }
+                ];
+            } else {
+                itens = [
+                    { texto: '👤 Área do Funcionário', acao: () => rolarParaSecao('panel-funcionario') },
+                    { texto: '🛠️ Abrir Novo Chamado', acao: () => rolarParaSecao('modulo-abertura') }
+                ];
+            }
+
+            itens.forEach(item => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.innerText = item.texto;
+                btn.onclick = () => {
+                    item.acao();
+                    dropdown.style.display = 'none';
+                };
+                dropdown.appendChild(btn);
+            });
+        }
+
+        function rolarParaSecao(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function executarBuscaGlobal() {
+            const val = document.getElementById('globalSearchInput').value.trim();
+            termoBuscaGlobal = val;
+            document.getElementById('btn-limpar-busca').style.display = val ? 'inline-block' : 'none';
+            renderizarTabelas();
+            rolarParaSecao('tabelaChamados');
+        }
+
+        function limparBuscaGlobal() {
+            document.getElementById('globalSearchInput').value = '';
+            termoBuscaGlobal = '';
+            document.getElementById('btn-limpar-busca').style.display = 'none';
+            renderizarTabelas();
+        }
+
+        function tratarSelecaoDescricao(valor) {
+            const txtArea = document.getElementById('chamadoDescricao');
+            if (valor === 'outro') {
+                txtArea.style.display = 'block';
+                txtArea.value = '';
+                txtArea.required = true;
+            } else {
+                txtArea.style.display = 'none';
+                txtArea.value = valor;
+                txtArea.required = false;
+            }
+        }
+
+        function tratarSelecaoSolucao(valor) {
+            const txtArea = document.getElementById('textoSolucao');
+            if (valor === 'outro') {
+                txtArea.style.display = 'block';
+                txtArea.value = '';
+                txtArea.required = true;
+            } else {
+                txtArea.style.display = 'none';
+                txtArea.value = valor;
+                txtArea.required = false;
+            }
+        }
+
+        function realizarLogin(event) {
+            event.preventDefault();
+            const usuarioInput = document.getElementById('usuario').value.trim().toLowerCase();
+            const senhaInput = document.getElementById('senha').value;
+            const unidadeInput = document.getElementById('loginUnidade').value;
+
+            if (!unidadeInput) {
+                mostrarToast('Unidade obrigatória', 'Selecione a unidade de saúde antes de entrar no sistema.');
+                return;
+            }
+
+            if (unidadeInput === '__TODAS__' && usuarioInput !== 'admin') {
+                mostrarToast('Acesso restrito', 'A opção Todas as unidades está disponível somente para o administrador.');
+                return;
+            }
+
+            if (senhaInput !== '123') {
+                mostrarToast('Atenção', 'Senha incorreta! Use a senha padrão: 123');
+                return;
+            }
+
+            if (usuarioInput === 'admin' || usuarioInput === 'tecnico' || usuarioInput === 'funcionario') {
+                currentUser = usuarioInput;
+                currentUnit = unidadeInput;
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-screen').style.display = 'flex';
+                
+                aplicarPermissoesPerfil();
+                construirMenuMobileDropdown();
+                renderizarTabelas();
+                mostrarToast('Bem-vindo!', `Sessão iniciada como ${currentUser.toUpperCase()} — ${currentUnit === '__TODAS__' ? 'Todas as unidades' : currentUnit}`);
+            } else {
+                mostrarToast('Erro de Login', 'Usuário não reconhecido. Use: admin, tecnico ou funcionario');
+            }
+        }
+
+        function realizarLogout() {
+            currentUser = null;
+            currentUnit = null;
+            document.getElementById('app-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('loginForm').reset();
+            limparBuscaGlobal();
+            cancelarEdicaoOuEncerramento();
+            fecharScanner();
+        }
+
+        function aplicarPermissoesPerfil() {
+            document.getElementById('panel-admin').style.display = (currentUser === 'admin') ? 'block' : 'none';
+            document.getElementById('panel-tecnico').style.display = (currentUser === 'tecnico') ? 'block' : 'none';
+            document.getElementById('panel-funcionario').style.display = (currentUser === 'funcionario') ? 'block' : 'none';
+
+            const modInv = document.getElementById('modulo-inventario');
+            const modCad = document.getElementById('modulo-cadastro');
+
+            if (currentUser === 'funcionario') {
+                modInv.style.display = 'none';
+                modCad.style.display = 'none';
+            } else {
+                modInv.style.display = 'block';
+                modCad.style.display = 'block';
+            }
+
+            let nomePerfil = 'Admin';
+            if (currentUser === 'tecnico') nomePerfil = 'Técnico';
+            if (currentUser === 'funcionario') nomePerfil = 'Funcionário';
+            document.getElementById('user-display').innerText = `Perfil: ${nomePerfil}`;
+
+            const unidadeChamado = document.getElementById('chamadoUnidade');
+            if (unidadeChamado) {
+                unidadeChamado.disabled = currentUnit !== '__TODAS__';
+                if (currentUnit !== '__TODAS__') unidadeChamado.value = currentUnit;
+            }
+            const unidadeFuncionario = document.getElementById('funcUnidade');
+            if (unidadeFuncionario && currentUnit !== '__TODAS__') {
+                unidadeFuncionario.value = currentUnit;
+                unidadeFuncionario.disabled = true;
+            } else if (unidadeFuncionario) {
+                unidadeFuncionario.disabled = false;
+            }
+        }
+
+        function atualizarDashboardAdmin() {
+            if (currentUser !== 'admin') return;
+
+            const funcionariosVisiveis = funcionariosDaUnidadeAtual();
+            const chamadosVisiveis = chamadosDaUnidadeAtual();
+            document.getElementById('kpi-total-funcionarios').innerText = funcionariosVisiveis.length;
+
+            const unidadesSet = new Set();
+            funcionariosVisiveis.forEach(f => { if(f.unidade) unidadesSet.add(f.unidade); });
+            chamadosVisiveis.forEach(c => { if(c.unidade) unidadesSet.add(c.unidade); });
+            document.getElementById('kpi-total-unidades').innerText = unidadesSet.size;
+
+            let abertos = 0, andamento = 0, fechados = 0;
+            let totalAvaliados = 0, totalSatisfeitos = 0;
+
+            chamadosVisiveis.forEach(c => {
+                if (c.status === 'aberto') abertos++;
+                else if (c.status === 'andamento') andamento++;
+                else if (c.status === 'encerrado') {
+                    fechados++;
+                    if (c.avaliacao) {
+                        totalAvaliados++;
+                        if (c.avaliacao === 'feliz') totalSatisfeitos++;
+                    }
+                }
+            });
+
+            document.getElementById('kpi-chamados-abertos').innerText = abertos;
+            document.getElementById('kpi-chamados-andamento').innerText = andamento;
+            document.getElementById('kpi-chamados-fechados').innerText = fechados;
+
+            let percSatisfacao = 0;
+            if (totalAvaliados > 0) {
+                percSatisfacao = Math.round((totalSatisfeitos / totalAvaliados) * 100);
+            }
+            document.getElementById('kpi-satisfacao').innerText = `${percSatisfacao}%`;
+        }
+
+        function atualizarMarcas() {
+            const tipo = document.getElementById('invEquipamento').value;
+            const selectMarca = document.getElementById('invMarca');
+            selectMarca.innerHTML = '<option value="">Selecione a marca</option>';
+
+            let lista = (tipo === 'Impressora') ? marcasImpressora : (tipo !== '' ? marcasGerais : []);
+            lista.forEach(marca => {
+                const opt = document.createElement('option');
+                opt.value = marca;
+                opt.innerText = marca;
+                selectMarca.appendChild(opt);
+            });
+        }
+
+        function cadastrarInventario(event) {
+            event.preventDefault();
+            const novoItem = {
+                patrimonio: document.getElementById('invPatrimonio').value,
+                serial: document.getElementById('invSerial').value,
+                equipamento: document.getElementById('invEquipamento').value,
+                marca: document.getElementById('invMarca').value,
+                setor: document.getElementById('invSetor').value,
+                responsavel: document.getElementById('invResponsavel').value,
+                telefone: document.getElementById('invTelefone').value
+            };
+            inventario.push(novoItem);
+            document.getElementById('formInventario').reset();
+            document.getElementById('invMarca').innerHTML = '<option value="">Selecione primeiro</option>';
+            renderizarTabelas();
+            mostrarToast('Sucesso', 'Equipamento cadastrado no inventário!');
+        }
+
+        function cadastrarFuncionario(event) {
+            event.preventDefault();
+            const novoFunc = {
+                nome: document.getElementById('funcNome').value,
+                unidade: document.getElementById('funcUnidade').value,
+                setor: document.getElementById('funcSetor').value,
+                telefone: document.getElementById('funcTelefone').value
+            };
+            funcionarios.push(novoFunc);
+            document.getElementById('formFuncionario').reset();
+            renderizarTabelas();
+            mostrarToast('Sucesso', 'Funcionário cadastrado com sucesso!');
+        }
+
+        function salvarChamadoOuSolucao(event) {
+            event.preventDefault();
+            const editId = document.getElementById('chamadoEditId').value;
+            const nomeSolicitante = document.getElementById('chamadoNome').value.trim();
+
+            const funcionarioExiste = funcionarios.some(f => f.nome.toLowerCase() === nomeSolicitante.toLowerCase());
+            if (!funcionarioExiste) {
+                mostrarToast('Usuário Não Cadastrado', 'O usuário informado não está cadastrado. Solicite o suporte de TI para realizar o cadastro.');
+                return;
+            }
+
+            if (editId) {
+                const ch = chamados.find(item => item.id == editId);
+                if (ch) {
+                    const comboSol = document.getElementById('selectSolucaoCombo').value;
+                    const solucaoTexto = comboSol === 'outro' ? document.getElementById('textoSolucao').value.trim() : comboSol;
+
+                    ch.status = 'encerrado';
+                    ch.solucao = solucaoTexto;
+
+                    cancelarEdicaoOuEncerramento();
+                    renderizarTabelas();
+                    mostrarToast('Encerrado', `Chamado #${ch.id} encerrado com solução registrada! Status atualizado para verde e satisfação liberada!`);
+                }
+            } else {
+                const comboDesc = document.getElementById('selectDescricaoCombo').value;
+                const unidadeSelecionada = document.getElementById('chamadoUnidade').value;
+                if (!unidadeAtualPermiteRegistro(unidadeSelecionada)) {
+                    mostrarToast('Unidade inválida', 'O chamado deve ser aberto na unidade selecionada no login.');
+                    return;
+                }
+                let descFinal = comboDesc === 'outro' ? document.getElementById('chamadoDescricao').value : comboDesc;
+
+                const novoChamado = {
+                    id: chamados.length > 0 ? Math.max(...chamados.map(c => c.id)) + 1 : 1,
+                    nome: nomeSolicitante,
+                    setor: document.getElementById('chamadoSetor').value,
+                    telefone: document.getElementById('chamadoTelefone').value,
+                    unidade: document.getElementById('chamadoUnidade').value,
+                    categoria: document.getElementById('chamadoCategoria').value,
+                    descricao: descFinal,
+                    status: 'aberto',
+                    solucao: "",
+                    avaliacao: null
+                };
+                chamados.push(novoChamado);
+                document.getElementById('formChamado').reset();
+                document.getElementById('selectDescricaoCombo').value = '';
+                document.getElementById('chamadoDescricao').style.display = 'none';
+                renderizarTabelas();
+                mostrarToast('Chamado Aberto', `Chamado #${novoChamado.id} registrado com sucesso!`);
+            }
+        }
+
+        function lidarMudancaStatus(id, novoStatus) {
+            const ch = chamados.find(item => item.id === id);
+            if (!ch) return;
+
+            if (novoStatus === 'encerrado') {
+                document.getElementById('chamadoEditId').value = ch.id;
+                document.getElementById('titulo-form-chamado').innerText = `Encerrar Chamado #${ch.id} (Informar Solução)`;
+                
+                document.getElementById('chamadoNome').value = ch.nome;
+                document.getElementById('chamadoSetor').value = ch.setor;
+                document.getElementById('chamadoTelefone').value = ch.telefone;
+                document.getElementById('chamadoUnidade').value = ch.unidade;
+                document.getElementById('chamadoCategoria').value = ch.categoria;
+
+                document.getElementById('selectDescricaoCombo').value = "outro";
+                document.getElementById('chamadoDescricao').style.display = 'block';
+                document.getElementById('chamadoDescricao').value = ch.descricao;
+
+                document.getElementById('bloco-solucao-container').style.display = 'block';
+                document.getElementById('selectSolucaoCombo').required = true;
+
+                document.getElementById('btn-submit-chamado').innerText = 'Salvar e Sair (Encerrar)';
+                document.getElementById('btn-submit-chamado').style.backgroundColor = 'var(--success)';
+                document.getElementById('btn-cancelar-edicao').style.display = 'inline-block';
+
+                rolarParaSecao('modulo-abertura');
+            } else {
+                ch.status = novoStatus;
+                renderizarTabelas();
+                mostrarToast('Status Atualizado', `Chamado #${id} alterado para ${novoStatus.toUpperCase()}`);
+            }
+        }
+
+        /* FUNÇÕES DO MODAL DE EXCLUSÃO PERSONALIZADO */
+        function excluirChamado(id) {
+            chamadoParaExcluirId = id;
+            document.getElementById('texto-aviso-exclusao').innerText = `O chamado #${id} será permanentemente excluído do sistema. Deseja continuar?`;
+            document.getElementById('modal-confirmar-exclusao').style.display = 'flex';
+        }
+
+        function fecharModalExclusao() {
+            chamadoParaExcluirId = null;
+            document.getElementById('modal-confirmar-exclusao').style.display = 'none';
+        }
+
+        function confirmarExclusaoChamado() {
+            if (chamadoParaExcluirId !== null) {
+                const idExcluido = chamadoParaExcluirId;
+                chamados = chamados.filter(item => item.id !== idExcluido);
+                fecharModalExclusao();
+                renderizarTabelas();
+                mostrarToast('Excluído', `Chamado #${idExcluido} removido com sucesso!`);
+            }
+        }
+
+        function cancelarEdicaoOuEncerramento() {
+            document.getElementById('formChamado').reset();
+            document.getElementById('chamadoEditId').value = '';
+            document.getElementById('titulo-form-chamado').innerText = 'Abrir Novo Chamado de Suporte';
+            document.getElementById('selectDescricaoCombo').value = '';
+            document.getElementById('chamadoDescricao').style.display = 'none';
+            document.getElementById('bloco-solucao-container').style.display = 'none';
+            document.getElementById('selectSolucaoCombo').required = false;
+            document.getElementById('textoSolucao').style.display = 'none';
+
+            document.getElementById('btn-submit-chamado').innerText = 'Enviar Chamado';
+            document.getElementById('btn-submit-chamado').style.backgroundColor = 'var(--primary-color)';
+            document.getElementById('btn-cancelar-edicao').style.display = 'none';
+        }
+
+        function avaliarChamado(id, nota) {
+            const ch = chamados.find(item => item.id === id);
+            if (ch) {
+                ch.avaliacao = nota;
+                renderizarTabelas();
+                mostrarToast('Avaliação Registrada', 'Obrigado pelo seu feedback!');
+            }
+        }
+
+        function renderizarTabelas() {
+            atualizarDashboardAdmin();
+
+            const tbodyInv = document.querySelector('#tabelaInventario tbody');
+            tbodyInv.innerHTML = '';
+            inventario.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${item.patrimonio}</td><td>${item.serial}</td><td>${item.equipamento}</td><td>${item.marca}</td><td>${item.setor}</td><td>${item.responsavel}</td><td style="white-space: nowrap; font-size: 0.8rem;">${item.telefone}</td>`;
+                tbodyInv.appendChild(tr);
+            });
+
+            const tbodyFunc = document.querySelector('#tabelaFuncionarios tbody');
+            tbodyFunc.innerHTML = '';
+            funcionariosDaUnidadeAtual().forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${item.nome}</td><td>${item.unidade}</td><td>${item.setor}</td><td style="white-space: nowrap; font-size: 0.8rem;">${item.telefone}</td>`;
+                tbodyFunc.appendChild(tr);
+            });
+
+            const tbodyCh = document.querySelector('#tabelaChamados tbody');
+            tbodyCh.innerHTML = '';
+
+            let chamadosFiltrados = chamadosDaUnidadeAtual();
+            if (termoBuscaGlobal) {
+                const termoLimpo = termoBuscaGlobal.replace('#', '').toLowerCase();
+                chamadosFiltrados = chamadosDaUnidadeAtual().filter(ch => {
+                    const matchNome = ch.nome.toLowerCase().includes(termoLimpo);
+                    const matchId = String(ch.id) === termoLimpo;
+                    return matchNome || matchId;
+                });
+            }
+
+            if (chamadosFiltrados.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="9" style="text-align: center; color: #64748b; padding: 15px;">Nenhum chamado encontrado para "${termoBuscaGlobal}".</td>`;
+                tbodyCh.appendChild(tr);
+                return;
+            }
+
+            chamadosFiltrados.forEach(ch => {
+                let badgeClass = 'badge-aberto';
+                if (ch.status === 'andamento') badgeClass = 'badge-andamento';
+                if (ch.status === 'encerrado') badgeClass = 'badge-encerrado';
+
+                let textoDescricaoSolucao = `<strong>Descrição:</strong> ${ch.descricao}`;
+                if (ch.status === 'encerrado' && ch.solucao) {
+                    textoDescricaoSolucao += `<br><span style="color: var(--success);"><strong>Solução:</strong> ${ch.solucao}</span>`;
+                }
+
+                let acoesHtml = '';
+                let botaoExcluirHtml = `<button type="button" onclick="excluirChamado(${ch.id})" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; display: block; margin-top: 4px; width: 100%;">Excluir</button>`;
+
+                if (currentUser === 'admin' || currentUser === 'tecnico') {
+                    let seletorStatus = `
+                        <select onchange="lidarMudancaStatus(${ch.id}, this.value)" style="padding: 4px; font-size: 0.8rem; border-radius: 4px; margin-bottom: 3px; display: block; width: 100%;">
+                            <option value="aberto" ${ch.status === 'aberto' ? 'selected' : ''}>Aberto</option>
+                            <option value="andamento" ${ch.status === 'andamento' ? 'selected' : ''}>Em Andamento</option>
+                            <option value="encerrado" ${ch.status === 'encerrado' ? 'selected' : ''}>Encerrado</option>
+                        </select>
+                    `;
+
+                    let statusAvaliacaoAdmin = '';
+                    if (ch.status === 'encerrado') {
+                        if (ch.avaliacao) {
+                            statusAvaliacaoAdmin = `<span style="font-size: 0.8rem; color: #16a34a; font-weight: 600; display: block; margin-top: 2px;">Avaliação: ${ch.avaliacao === 'feliz' ? '😊 Satisfeito' : '😞 Insatisfeito'}</span>`;
+                        } else {
+                            statusAvaliacaoAdmin = `<span style="font-size: 0.75rem; color: #64748b; display: block; margin-top: 2px;">Aguardando avaliação</span>`;
+                        }
+                    }
+                    acoesHtml = seletorStatus + statusAvaliacaoAdmin + (currentUser === 'admin' ? botaoExcluirHtml : '');
+
+                } else {
+                    if (ch.status === 'encerrado') {
+                        if (ch.avaliacao) {
+                            acoesHtml = `<span style="font-size: 0.8rem; color: #16a34a; font-weight: 600;">Avaliado: ${ch.avaliacao === 'feliz' ? '😊 Satisfeito' : '😞 Insatisfeito'}</span>`;
+                        } else {
+                            acoesHtml = `
+                                <div class="satisfaction-options">
+                                    <button type="button" onclick="avaliarChamado(${ch.id}, 'feliz')" title="Satisfeito">😊</button>
+                                    <button type="button" onclick="avaliarChamado(${ch.id}, 'triste')" title="Insatisfeito">😞</button>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        acoesHtml = `<span style="font-size: 0.75rem; color: #64748b;">Aguardando encerramento</span>`;
+                    }
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>#${ch.id}</td>
+                    <td>${ch.nome}</td>
+                    <td>${ch.setor}</td>
+                    <td style="white-space: nowrap; font-size: 0.8rem;">${ch.telefone}</td>
+                    <td>${ch.unidade}</td>
+                    <td>${ch.categoria}</td>
+                    <td style="font-size: 0.82rem; line-height: 1.3;">${textoDescricaoSolucao}</td>
+                    <td><span class="badge ${badgeClass}">${ch.status.toUpperCase()}</span></td>
+                    <td>${acoesHtml}</td>
+                `;
+                tbodyCh.appendChild(tr);
+            });
+        }
+
+        function iniciarScanner(inputId) {
+            targetInputId = inputId;
+            document.getElementById('scanner-modal').style.display = 'flex';
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(stream => {
+                    mediaStream = stream;
+                    document.getElementById('video-scanner').srcObject = stream;
+                })
+                .catch(err => {
+                    mostrarToast('Câmera Indisponível', 'Não foi possível acessar a câmera do dispositivo.');
+                    fecharScanner();
+                });
+        }
+
+        function fecharScanner() {
+            document.getElementById('scanner-modal').style.display = 'none';
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+        }
