@@ -153,6 +153,8 @@ let currentEmployee = null;
         }
         setInterval(atualizarRelogio, 1000);
         atualizarRelogio();
+        // Inicializa a persistência local antes de permitir operações no sistema.
+        const dadosPersistenciaProntos = restaurarDadosSistema();
         inicializarUnidades();
 
         document.getElementById('usuario')?.addEventListener('input', function() {
@@ -304,26 +306,194 @@ let currentEmployee = null;
         }
 
         const STORAGE_SESSAO = 'helpdeskRioSaudeSessao';
+        const STORAGE_CHAMADOS = 'helpdeskRioSaudeChamados';
+        const STORAGE_FUNCIONARIOS = 'helpdeskRioSaudeFuncionarios';
+        const STORAGE_INVENTARIO = 'helpdeskRioSaudeInventario';
+        const STORAGE_DADOS_SESSAO = 'helpdeskRioSaudeDadosSessao';
 
+        // Banco de dados local do Helpdesk RIO Saúde.
+        // IndexedDB fica dentro do navegador e é muito mais adequado para
+        // armazenar os registros do sistema do que depender apenas do localStorage.
+        const DB_NOME = 'HelpdeskRIOSaudeDB';
+        const DB_VERSAO = 1;
+        const DB_STORE = 'sistema';
+        let bancoDados = null;
+
+        function abrirBancoDados() {
+            return new Promise((resolve, reject) => {
+                if (!('indexedDB' in window)) {
+                    reject(new Error('IndexedDB não disponível neste navegador.'));
+                    return;
+                }
+                const request = indexedDB.open(DB_NOME, DB_VERSAO);
+                request.onupgradeneeded = function(event) {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(DB_STORE)) {
+                        db.createObjectStore(DB_STORE, { keyPath: 'id' });
+                    }
+                };
+                request.onsuccess = function(event) {
+                    bancoDados = event.target.result;
+                    resolve(bancoDados);
+                };
+                request.onerror = function() {
+                    reject(request.error || new Error('Falha ao abrir o banco local.'));
+                };
+            });
+        }
+
+        function lerBancoDados() {
+            return abrirBancoDados().then(db => new Promise((resolve, reject) => {
+                const tx = db.transaction(DB_STORE, 'readonly');
+                const store = tx.objectStore(DB_STORE);
+                const request = store.get('principal');
+                request.onsuccess = () => resolve(request.result || null);
+                request.onerror = () => reject(request.error);
+            }));
+        }
+
+        function gravarBancoDados() {
+            const dados = {
+                id: 'principal',
+                chamados: Array.isArray(chamados) ? chamados : [],
+                funcionarios: Array.isArray(funcionarios) ? funcionarios : [],
+                inventario: Array.isArray(inventario) ? inventario : [],
+                salvoEm: Date.now()
+            };
+            return abrirBancoDados().then(db => new Promise((resolve, reject) => {
+                const tx = db.transaction(DB_STORE, 'readwrite');
+                tx.objectStore(DB_STORE).put(dados);
+                tx.oncomplete = () => resolve(true);
+                tx.onerror = () => reject(tx.error || new Error('Falha ao gravar no banco local.'));
+                tx.onabort = () => reject(tx.error || new Error('Transação do banco cancelada.'));
+            }));
+        }
+
+        function salvarDadosSistema() {
+            const dados = {
+                chamados: chamados,
+                funcionarios: funcionarios,
+                inventario: inventario,
+                salvoEm: Date.now()
+            };
+            const texto = JSON.stringify(dados);
+
+            try {
+                localStorage.setItem(STORAGE_CHAMADOS, JSON.stringify(chamados));
+                localStorage.setItem(STORAGE_FUNCIONARIOS, JSON.stringify(funcionarios));
+                localStorage.setItem(STORAGE_INVENTARIO, JSON.stringify(inventario));
+                localStorage.setItem(STORAGE_DADOS_SESSAO, texto);
+                sessionStorage.setItem(STORAGE_DADOS_SESSAO, texto);
+            } catch (erro) {
+                console.warn('LocalStorage indisponível:', erro);
+            }
+
+            // IndexedDB é a fonte de persistência principal.
+            gravarBancoDados().catch(erro => {
+                console.warn('Não foi possível gravar no banco IndexedDB:', erro);
+            });
+        }
+
+        function aplicarDadosPersistidos(dados) {
+            if (!dados) return;
+            if (Array.isArray(dados.funcionarios)) funcionarios = dados.funcionarios;
+            if (Array.isArray(dados.chamados)) chamados = dados.chamados;
+            if (Array.isArray(dados.inventario)) inventario = dados.inventario;
+        }
+
+        function obterDadosStorage() {
+            try {
+                const backup = sessionStorage.getItem(STORAGE_DADOS_SESSAO) || localStorage.getItem(STORAGE_DADOS_SESSAO);
+                if (backup) {
+                    const dados = JSON.parse(backup);
+                    if (dados && (Array.isArray(dados.funcionarios) || Array.isArray(dados.chamados) || Array.isArray(dados.inventario))) {
+                        return dados;
+                    }
+                }
+
+                const funcionariosSalvos = localStorage.getItem(STORAGE_FUNCIONARIOS);
+                const chamadosSalvos = localStorage.getItem(STORAGE_CHAMADOS);
+                const inventarioSalvo = localStorage.getItem(STORAGE_INVENTARIO);
+                return {
+                    funcionarios: funcionariosSalvos ? JSON.parse(funcionariosSalvos) : funcionarios,
+                    chamados: chamadosSalvos ? JSON.parse(chamadosSalvos) : chamados,
+                    inventario: inventarioSalvo ? JSON.parse(inventarioSalvo) : inventario,
+                    salvoEm: 0
+                };
+            } catch (erro) {
+                console.warn('Não foi possível ler os dados locais:', erro);
+                return null;
+            }
+        }
+
+        function restaurarDadosSistema() {
+            // Primeiro carrega imediatamente o último backup disponível para que
+            // a tela nunca fique sem os registros enquanto o IndexedDB abre.
+            const dadosStorage = obterDadosStorage();
+            if (dadosStorage) aplicarDadosPersistidos(dadosStorage);
+
+            // Depois consulta o banco local e escolhe o snapshot mais recente.
+            return lerBancoDados().then(dadosBanco => {
+                const dataStorage = Number(dadosStorage?.salvoEm || 0);
+                const dataBanco = Number(dadosBanco?.salvoEm || 0);
+
+                if (dadosBanco && dataBanco >= dataStorage) {
+                    aplicarDadosPersistidos(dadosBanco);
+                } else if (dadosStorage) {
+                    // Migração automática dos dados existentes para o banco.
+                    return gravarBancoDados();
+                } else {
+                    return gravarBancoDados();
+                }
+                return true;
+            }).catch(erro => {
+                console.warn('IndexedDB indisponível. O sistema continuará com armazenamento local:', erro);
+                return false;
+            });
+        }
+
+        // Mantém a sessão mesmo quando o funcionário usa F5/recarrega a página.
+        // O sessionStorage funciona como segunda camada de segurança para o recarregamento.
         function salvarSessao() {
             if (!currentUser || !currentUnit) return;
             const sessao = {
                 currentUser,
                 currentUnit,
                 employeeLogin: currentEmployee?.login || null,
+                employeeName: currentEmployee?.nome || null,
+                // Cópia da lista de funcionários dentro da sessão. Isso garante
+                // que o cadastro recém-salvo sobreviva ao F5 mesmo se o navegador
+                // falhar ao recuperar o localStorage.
+                funcionariosSnapshot: funcionarios,
                 scrollY: window.scrollY || 0,
-                pagina: document.querySelector('.card:target')?.id || null
+                pagina: document.querySelector('.card:target')?.id || null,
+                timestamp: Date.now()
             };
-            localStorage.setItem(STORAGE_SESSAO, JSON.stringify(sessao));
+            const dados = JSON.stringify(sessao);
+            try {
+                localStorage.setItem(STORAGE_SESSAO, dados);
+                sessionStorage.setItem(STORAGE_SESSAO, dados);
+            } catch (erro) {
+                console.warn('Não foi possível salvar a sessão local:', erro);
+            }
         }
 
         function limparSessaoSalva() {
             localStorage.removeItem(STORAGE_SESSAO);
+            sessionStorage.removeItem(STORAGE_SESSAO);
+            // Os funcionários NÃO são apagados no logout.
+            // Apenas removemos a cópia de sessão para iniciar uma nova sessão limpa.
+            sessionStorage.removeItem(STORAGE_DADOS_SESSAO);
+        }
+
+        function obterSessaoSalva() {
+            // No F5, prioriza a sessão da aba e usa localStorage como persistência adicional.
+            return sessionStorage.getItem(STORAGE_SESSAO) || localStorage.getItem(STORAGE_SESSAO);
         }
 
         function restaurarSessao() {
             try {
-                const salvo = localStorage.getItem(STORAGE_SESSAO);
+                const salvo = obterSessaoSalva();
                 if (!salvo) return false;
 
                 const sessao = JSON.parse(salvo);
@@ -333,11 +503,32 @@ let currentEmployee = null;
                 currentUnit = sessao.currentUnit;
                 currentEmployee = null;
 
+                // Se a sessão contém uma cópia mais recente dos funcionários,
+                // restaura essa cópia antes de procurar o funcionário logado.
+                if (Array.isArray(sessao.funcionariosSnapshot) && sessao.funcionariosSnapshot.length) {
+                    funcionarios = sessao.funcionariosSnapshot;
+                    try {
+                        localStorage.setItem(STORAGE_FUNCIONARIOS, JSON.stringify(funcionarios));
+                        sessionStorage.setItem(STORAGE_DADOS_SESSAO, JSON.stringify({
+                            chamados, funcionarios, inventario, salvoEm: Date.now()
+                        }));
+                    } catch (erro) {
+                        console.warn('Não foi possível sincronizar o cadastro restaurado:', erro);
+                    }
+                }
+
                 if (currentUser === 'funcionario') {
                     currentEmployee = funcionarios.find(f =>
                         f.login && sessao.employeeLogin &&
                         f.login.toLowerCase() === sessao.employeeLogin.toLowerCase()
                     ) || null;
+
+                    if (!currentEmployee && sessao.employeeName) {
+                        currentEmployee = funcionarios.find(f =>
+                            f.nome && f.nome.toLowerCase() === sessao.employeeName.toLowerCase()
+                        ) || null;
+                    }
+
                     if (!currentEmployee) {
                         limparSessaoSalva();
                         currentUser = null;
@@ -355,14 +546,21 @@ let currentEmployee = null;
                 construirMenuMobileDropdown();
                 renderizarTabelas();
 
+                // Regrava nas duas áreas para garantir que o próximo F5 encontre a sessão.
+                salvarSessao();
+
                 // Restaura exatamente a posição em que o usuário estava antes do F5.
-                requestAnimationFrame(() => {
-                    window.scrollTo({ top: Number(sessao.scrollY) || 0, behavior: 'auto' });
-                });
+                const restaurarPosicao = () => {
+                    const posicao = Number(sessao.scrollY) || 0;
+                    window.scrollTo({ top: posicao, left: 0, behavior: 'auto' });
+                };
+                requestAnimationFrame(restaurarPosicao);
+                setTimeout(restaurarPosicao, 100);
+                setTimeout(restaurarPosicao, 350);
+                setTimeout(restaurarPosicao, 700);
                 return true;
             } catch (erro) {
                 console.warn('Não foi possível restaurar a sessão:', erro);
-                limparSessaoSalva();
                 return false;
             }
         }
@@ -458,10 +656,22 @@ let currentEmployee = null;
                 modCad.style.display = 'block';
             }
 
-            let nomePerfil = 'Admin';
-            if (currentUser === 'tecnico') nomePerfil = 'Técnico';
-            if (currentUser === 'funcionario') nomePerfil = 'Funcionário';
+            let nomePerfil = 'Administrador';
+            let nomeUsuario = 'Administrador';
+            if (currentUser === 'tecnico') {
+                nomePerfil = 'Técnico';
+                nomeUsuario = 'Técnico';
+            }
+            if (currentUser === 'funcionario') {
+                nomePerfil = 'Funcionário';
+                nomeUsuario = currentEmployee?.nome || 'Funcionário';
+            }
             document.getElementById('user-display').innerText = `Perfil: ${nomePerfil}`;
+
+            const welcomeUser = document.getElementById('welcome-user');
+            if (welcomeUser) {
+                welcomeUser.textContent = `Bem-vindo, ${nomeUsuario}!`;
+            }
 
             const unidadeChamado = document.getElementById('chamadoUnidade');
             if (unidadeChamado) {
@@ -627,6 +837,8 @@ let currentEmployee = null;
             if (funcionarioEditIndex !== null && (currentUser === 'admin' || currentUser === 'tecnico')) {
                 funcionarios[funcionarioEditIndex] = novoFunc;
                 funcionarioEditIndex = null;
+                salvarDadosSistema();
+                salvarSessao();
                 document.querySelector('#formFuncionario button[type="submit"]').innerText = 'Cadastrar Funcionário';
                 document.getElementById('formFuncionario').reset();
                 aplicarPermissoesPerfil();
@@ -636,6 +848,8 @@ let currentEmployee = null;
             }
 
             funcionarios.push(novoFunc);
+            salvarDadosSistema();
+            salvarSessao();
             document.getElementById('formFuncionario').reset();
             aplicarPermissoesPerfil();
             renderizarTabelas();
@@ -729,6 +943,7 @@ let currentEmployee = null;
                         const solucaoTexto = comboSol === 'outro' ? document.getElementById('textoSolucao').value.trim() : comboSol;
 
                         ch.status = 'encerrado';
+                        salvarDadosSistema();
                         ch.solucao = solucaoTexto;
 
                         cancelarEdicaoOuEncerramento();
@@ -759,6 +974,7 @@ let currentEmployee = null;
                     avaliacao: null
                 };
                 chamados.push(novoChamado);
+                salvarDadosSistema();
                 document.getElementById('formChamado').reset();
                 document.getElementById('selectDescricaoCombo').value = '';
                 document.getElementById('chamadoDescricao').style.display = 'none';
@@ -796,6 +1012,8 @@ let currentEmployee = null;
                 rolarParaSecao('modulo-abertura');
             } else {
                 ch.status = novoStatus;
+                salvarDadosSistema();
+                salvarSessao();
                 renderizarTabelas();
                 mostrarToast('Status Atualizado', `Chamado #${id} alterado para ${novoStatus.toUpperCase()}`);
             }
@@ -827,6 +1045,7 @@ let currentEmployee = null;
 
             if (registro.tipo === 'chamado') {
                 chamados = chamados.filter(item => item.id !== registro.id);
+                salvarDadosSistema();
                 fecharModalExclusao();
                 renderizarTabelas();
                 mostrarToast('Excluído', `Chamado #${registro.id} removido com sucesso!`);
@@ -836,6 +1055,7 @@ let currentEmployee = null;
             if (registro.tipo === 'inventario') {
                 const item = inventario[registro.index];
                 inventario.splice(registro.index, 1);
+                salvarDadosSistema();
                 fecharModalExclusao();
                 renderizarTabelas();
                 mostrarToast('Excluído', `Equipamento "${item?.patrimonio || ''}" removido do inventário com sucesso!`);
@@ -845,6 +1065,8 @@ let currentEmployee = null;
             if (registro.tipo === 'funcionario') {
                 const item = funcionarios[registro.index];
                 funcionarios.splice(registro.index, 1);
+                salvarDadosSistema();
+                salvarSessao();
                 fecharModalExclusao();
                 renderizarTabelas();
                 mostrarToast('Excluído', `Funcionário "${item?.nome || ''}" removido com sucesso!`);
@@ -1060,4 +1282,25 @@ let currentEmployee = null;
 
 
 // Restaura automaticamente a sessão e a posição da página após F5/recarregamento.
-setTimeout(() => restaurarSessao(), 0);
+window.addEventListener('beforeunload', salvarSessao);
+window.addEventListener('pagehide', salvarSessao);
+
+async function iniciarRestauracaoSessao() {
+    // Aguarda o banco local antes de restaurar a sessão. Assim, o F5 nunca
+    // restaura uma sessão antiga por cima de um funcionário recém-cadastrado.
+    try {
+        if (typeof dadosPersistenciaProntos !== 'undefined') {
+            await dadosPersistenciaProntos;
+        }
+    } catch (erro) {
+        console.warn('Persistência local não ficou pronta:', erro);
+    }
+    restaurarSessao();
+    renderizarTabelas();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciarRestauracaoSessao, { once: true });
+} else {
+    iniciarRestauracaoSessao();
+}
