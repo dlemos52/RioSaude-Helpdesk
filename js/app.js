@@ -1,4 +1,5 @@
 let currentUser = null;
+let currentEmployee = null;
         let currentUnit = null;
 
         // Unidades oficiais da rede municipal consultadas no portal da Secretaria Municipal de Saúde.
@@ -95,6 +96,18 @@ let currentUser = null;
         }
 
         function chamadosDaUnidadeAtual() {
+            // Admin e Técnico têm visão completa de todos os chamados.
+            if (currentUser === 'admin' || currentUser === 'tecnico') return chamados;
+
+            // Funcionário visualiza somente os chamados abertos por ele.
+            if (currentUser === 'funcionario' && currentEmployee) {
+                return chamados.filter(c => {
+                    const mesmoLogin = currentEmployee.login && c.login && c.login.toLowerCase() === currentEmployee.login.toLowerCase();
+                    const mesmoNome = c.nome && currentEmployee.nome && c.nome.toLowerCase() === currentEmployee.nome.toLowerCase();
+                    return mesmoLogin || mesmoNome;
+                });
+            }
+
             if (!currentUnit || currentUnit === '__TODAS__') return chamados;
             return chamados.filter(c => c.unidade === currentUnit);
         }
@@ -112,14 +125,14 @@ let currentUser = null;
         let funcionarioEditIndex = null;
 
         let chamados = [
-            { id: 1, nome: "Enfermeira Ana Paula", setor: "Enfermagem", telefone: "(21) 97777-1111", unidade: "Hospital Maternidade Carmela Dutra", categoria: "Prontuário Eletrônico", descricao: "Erro ao salvar triagem obstétrica.", status: "aberto", solucao: "", avaliacao: null },
-            { id: 2, nome: "Dr. Roberto Mendes", setor: "Recepção da Emergência", telefone: "(21) 96666-2222", unidade: "Hospital Municipal Souza Aguiar", categoria: "Rede / Internet", descricao: "Queda de conexão recorrente no posto.", status: "andamento", solucao: "", avaliacao: null },
-            { id: 3, nome: "Carlos Alberto", setor: "Diretoria", telefone: "(21) 98888-3333", unidade: "Hospital Municipal Miguel Couto", categoria: "Equipamento Médico", descricao: "Manutenção preventiva em monitor.", status: "encerrado", solucao: "Substituição do cabo de força danificado e reconfiguração de IP.", avaliacao: "feliz" }
+            { id: 1, nome: "Enfermeira Ana Paula", login: "ana.paula", setor: "Enfermagem", telefone: "(21) 97777-1111", unidade: "Hospital Maternidade Carmela Dutra", categoria: "Prontuário Eletrônico", descricao: "Erro ao salvar triagem obstétrica.", status: "aberto", solucao: "", avaliacao: null },
+            { id: 2, nome: "Dr. Roberto Mendes", login: "roberto.mendes", setor: "Recepção da Emergência", telefone: "(21) 96666-2222", unidade: "Hospital Municipal Souza Aguiar", categoria: "Rede / Internet", descricao: "Queda de conexão recorrente no posto.", status: "andamento", solucao: "", avaliacao: null },
+            { id: 3, nome: "Carlos Alberto", login: "carlos.alberto", setor: "Diretoria", telefone: "(21) 98888-3333", unidade: "Hospital Municipal Miguel Couto", categoria: "Equipamento Médico", descricao: "Manutenção preventiva em monitor.", status: "encerrado", solucao: "Substituição do cabo de força danificado e reconfiguração de IP.", avaliacao: "feliz" }
         ];
         let funcionarios = [
-            { nome: "Enfermeira Ana Paula", unidade: "Hospital Maternidade Carmela Dutra", setor: "Enfermagem", telefone: "(21) 97777-1111" },
-            { nome: "Dr. Roberto Mendes", unidade: "Hospital Municipal Souza Aguiar", setor: "Recepção da Emergência", telefone: "(21) 96666-2222" },
-            { nome: "Carlos Alberto", unidade: "Hospital Municipal Miguel Couto", setor: "Diretoria", telefone: "(21) 98888-3333" }
+            { nome: "Enfermeira Ana Paula", unidade: "Hospital Maternidade Carmela Dutra", setor: "Enfermagem", telefone: "(21) 97777-1111", login: "ana.paula", senha: "123" },
+            { nome: "Dr. Roberto Mendes", unidade: "Hospital Municipal Souza Aguiar", setor: "Recepção da Emergência", telefone: "(21) 96666-2222", login: "roberto.mendes", senha: "123" },
+            { nome: "Carlos Alberto", unidade: "Hospital Municipal Miguel Couto", setor: "Diretoria", telefone: "(21) 98888-3333", login: "carlos.alberto", senha: "123" }
         ];
         let inventario = [
             { patrimonio: "P01", serial: "S1234", equipamento: "Desktop", marca: "Dell", setor: "Recepção da Emergência", responsavel: "Carlos Alberto", telefone: "(21) 98888-1111" }
@@ -293,13 +306,34 @@ let currentUser = null;
                 return;
             }
 
-            if (senhaInput !== '123') {
-                mostrarToast('Atenção', 'Senha incorreta! Use a senha padrão: 123');
-                return;
+            let perfil = null;
+            if (usuarioInput === 'admin' || usuarioInput === 'tecnico') {
+                if (senhaInput !== '123') {
+                    mostrarToast('Atenção', 'Senha incorreta! Para este acesso, use a senha padrão: 123');
+                    return;
+                }
+                perfil = usuarioInput;
+            } else {
+                const funcionario = funcionarios.find(f => f.login && f.login.toLowerCase() === usuarioInput);
+                if (!funcionario) {
+                    mostrarToast('Erro de Login', 'Login não encontrado. Verifique o login informado.');
+                    return;
+                }
+                if ((funcionario.senha || '123') !== senhaInput) {
+                    mostrarToast('Atenção', 'Senha incorreta. Verifique a senha cadastrada para este usuário.');
+                    return;
+                }
+                if (funcionario.unidade !== unidadeInput) {
+                    mostrarToast('Unidade incorreta', `Este usuário está cadastrado na unidade ${funcionario.unidade}. Selecione a unidade correta para entrar.`);
+                    return;
+                }
+                perfil = 'funcionario';
+                currentEmployee = funcionario;
             }
 
-            if (usuarioInput === 'admin' || usuarioInput === 'tecnico' || usuarioInput === 'funcionario') {
-                currentUser = usuarioInput;
+            if (perfil) {
+                currentUser = perfil;
+                if (perfil !== 'funcionario') currentEmployee = null;
                 currentUnit = unidadeInput;
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-screen').style.display = 'flex';
@@ -309,12 +343,13 @@ let currentUser = null;
                 renderizarTabelas();
                 mostrarToast('Bem-vindo!', `Sessão iniciada como ${currentUser.toUpperCase()} — ${currentUnit === '__TODAS__' ? 'Todas as unidades' : currentUnit}`);
             } else {
-                mostrarToast('Erro de Login', 'Usuário não reconhecido. Use: admin, tecnico ou funcionario');
+                mostrarToast('Erro de Login', 'Usuário ou senha não reconhecidos. Use um acesso administrativo ou um login cadastrado.');
             }
         }
 
         function realizarLogout() {
             currentUser = null;
+            currentEmployee = null;
             currentUnit = null;
             document.getElementById('app-screen').style.display = 'none';
             document.getElementById('login-screen').style.display = 'flex';
@@ -462,15 +497,11 @@ let currentUser = null;
         }
 
         function editarInventario(index) {
-            if (currentUser !== 'admin') {
-                mostrarToast('Acesso restrito', 'A edição do inventário está disponível somente para o administrador.');
+            if (currentUser !== 'admin' && currentUser !== 'tecnico') {
+                mostrarToast('Acesso restrito', 'A edição do inventário está disponível somente para administrador e técnico.');
                 return;
             }
-            inventarioEditIndex = index;
-            preencherFormularioInventario(inventario[index]);
-            const btn = document.querySelector('#formInventario button[type="submit"]');
-            btn.innerText = 'Salvar Alterações';
-            rolarParaSecao('modulo-inventario');
+            abrirConfirmacaoEdicao('inventario', index);
         }
 
         function excluirInventario(index) {
@@ -486,6 +517,8 @@ let currentUser = null;
             document.getElementById('funcUnidade').value = item.unidade;
             document.getElementById('funcSetor').value = item.setor;
             document.getElementById('funcTelefone').value = item.telefone;
+            document.getElementById('funcLogin').value = item.login || '';
+            document.getElementById('funcSenha').value = item.senha || '123';
         }
 
         function cadastrarFuncionario(event) {
@@ -499,10 +532,20 @@ let currentUser = null;
                 nome: document.getElementById('funcNome').value.trim(),
                 unidade: document.getElementById('funcUnidade').value,
                 setor: document.getElementById('funcSetor').value,
-                telefone: document.getElementById('funcTelefone').value.trim()
+                telefone: document.getElementById('funcTelefone').value.trim(),
+                login: document.getElementById('funcLogin').value.trim().toLowerCase(),
+                senha: document.getElementById('funcSenha').value
             };
 
-            if (funcionarioEditIndex !== null && currentUser === 'admin') {
+            const loginDuplicado = funcionarios.some((f, i) =>
+                f.login && f.login.toLowerCase() === novoFunc.login && i !== funcionarioEditIndex
+            );
+            if (loginDuplicado) {
+                mostrarToast('Login já cadastrado', 'Informe um login diferente para este funcionário.');
+                return;
+            }
+
+            if (funcionarioEditIndex !== null && (currentUser === 'admin' || currentUser === 'tecnico')) {
                 funcionarios[funcionarioEditIndex] = novoFunc;
                 funcionarioEditIndex = null;
                 document.querySelector('#formFuncionario button[type="submit"]').innerText = 'Cadastrar Funcionário';
@@ -521,15 +564,48 @@ let currentUser = null;
         }
 
         function editarFuncionario(index) {
-            if (currentUser !== 'admin') {
-                mostrarToast('Acesso restrito', 'A edição de funcionários está disponível somente para o administrador.');
+            if (currentUser !== 'admin' && currentUser !== 'tecnico') {
+                mostrarToast('Acesso restrito', 'A edição de funcionários está disponível somente para administrador e técnico.');
                 return;
             }
-            funcionarioEditIndex = index;
-            preencherFormularioFuncionario(funcionarios[index]);
-            const btn = document.querySelector('#formFuncionario button[type="submit"]');
-            btn.innerText = 'Salvar Alterações';
-            rolarParaSecao('modulo-cadastro');
+            abrirConfirmacaoEdicao('funcionario', index);
+        }
+
+        let registroParaEditar = null;
+
+        function abrirConfirmacaoEdicao(tipo, index) {
+            registroParaEditar = { tipo, index };
+            const titulo = tipo === 'funcionario' ? 'Editar funcionário' : 'Editar equipamento';
+            const nome = tipo === 'funcionario'
+                ? funcionarios[index].nome
+                : `${inventario[index].equipamento} - ${inventario[index].patrimonio}`;
+            document.getElementById('titulo-aviso-edicao').innerText = titulo;
+            document.getElementById('texto-aviso-edicao').innerText = `Deseja editar o registro "${nome}"? Escolha Editar para continuar ou Sair para cancelar.`;
+            document.getElementById('modal-confirmar-edicao').style.display = 'flex';
+        }
+
+        function fecharModalEdicao() {
+            registroParaEditar = null;
+            document.getElementById('modal-confirmar-edicao').style.display = 'none';
+        }
+
+        function confirmarEdicaoRegistro() {
+            if (!registroParaEditar) return;
+            const registro = registroParaEditar;
+            fecharModalEdicao();
+            if (registro.tipo === 'funcionario') {
+                funcionarioEditIndex = registro.index;
+                preencherFormularioFuncionario(funcionarios[registro.index]);
+                const btn = document.querySelector('#formFuncionario button[type="submit"]');
+                btn.innerText = 'Salvar Alterações';
+                rolarParaSecao('modulo-cadastro');
+            } else {
+                inventarioEditIndex = registro.index;
+                preencherFormularioInventario(inventario[registro.index]);
+                const btn = document.querySelector('#formInventario button[type="submit"]');
+                btn.innerText = 'Salvar Alterações';
+                rolarParaSecao('modulo-inventario');
+            }
         }
 
         function excluirFuncionario(index) {
@@ -593,6 +669,7 @@ let currentUser = null;
                 const novoChamado = {
                     id: chamados.length > 0 ? Math.max(...chamados.map(c => c.id)) + 1 : 1,
                     nome: nomeSolicitante,
+                    login: currentUser === 'funcionario' && currentEmployee ? currentEmployee.login : '',
                     setor: document.getElementById('chamadoSetor').value,
                     telefone: document.getElementById('chamadoTelefone').value,
                     unidade: document.getElementById('chamadoUnidade').value,
@@ -766,10 +843,10 @@ let currentUser = null;
             const tbodyInv = document.querySelector('#tabelaInventario tbody');
             tbodyInv.innerHTML = '';
             inventario.forEach((item, index) => {
-                const acoes = currentUser === 'admin'
+                const acoes = (currentUser === 'admin' || currentUser === 'tecnico')
                     ? `<div class="admin-actions">
                         <button type="button" class="action-edit" onclick="editarInventario(${index})">Editar</button>
-                        <button type="button" class="action-delete" onclick="excluirInventario(${index})">Excluir</button>
+                        ${currentUser === 'admin' ? `<button type="button" class="action-delete" onclick="excluirInventario(${index})">Excluir</button>` : ''}
                        </div>`
                     : '';
                 const tr = document.createElement('tr');
@@ -781,14 +858,14 @@ let currentUser = null;
             tbodyFunc.innerHTML = '';
             funcionariosDaUnidadeAtual().forEach(item => {
                 const originalIndex = funcionarios.indexOf(item);
-                const acoes = currentUser === 'admin'
+                const acoes = (currentUser === 'admin' || currentUser === 'tecnico')
                     ? `<div class="admin-actions">
                         <button type="button" class="action-edit" onclick="editarFuncionario(${originalIndex})">Editar</button>
-                        <button type="button" class="action-delete" onclick="excluirFuncionario(${originalIndex})">Excluir</button>
+                        ${currentUser === 'admin' ? `<button type="button" class="action-delete" onclick="excluirFuncionario(${originalIndex})">Excluir</button>` : ''}
                        </div>`
                     : '';
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${item.nome}</td><td>${item.unidade}</td><td>${item.setor}</td><td style="white-space: nowrap; font-size: 0.8rem;">${item.telefone}</td><td class="admin-only-cell">${acoes}</td>`;
+                tr.innerHTML = `<td>${item.nome}</td><td>${item.unidade}</td><td>${item.setor}</td><td style="white-space: nowrap; font-size: 0.8rem;">${item.telefone}</td><td>${item.login || '—'}</td><td>${item.senha ? '••••••••' : '—'}</td><td class="admin-only-cell">${acoes}</td>`;
                 tbodyFunc.appendChild(tr);
             });
 

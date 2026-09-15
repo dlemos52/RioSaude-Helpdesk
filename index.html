@@ -29,6 +29,19 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMAÇÃO DE EDIÇÃO -->
+    <div id="modal-confirmar-edicao">
+        <div class="confirm-card edit-confirm-card">
+            <div class="edit-confirm-icon">✎</div>
+            <h3 id="titulo-aviso-edicao">Editar registro</h3>
+            <p id="texto-aviso-edicao">Deseja editar este registro?</p>
+            <div class="confirm-actions">
+                <button type="button" class="btn action-delete modal-action-btn" onclick="fecharModalEdicao()">Sair</button>
+                <button type="button" class="btn action-edit modal-action-btn" onclick="confirmarEdicaoRegistro()">Editar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE SCANNER DE CÂMERA -->
     <div id="scanner-modal">
         <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; max-width: 450px; width: 100%;">
@@ -358,6 +371,14 @@
                                 <label>Telefone</label>
                                 <input type="text" id="funcTelefone" required placeholder="(21) 99999-9999">
                             </div>
+                            <div class="form-group">
+                                <label>Login</label>
+                                <input type="text" id="funcLogin" required autocomplete="username" placeholder="Ex: carlos.silva">
+                            </div>
+                            <div class="form-group">
+                                <label>Senha</label>
+                                <input type="password" id="funcSenha" required autocomplete="new-password" placeholder="Crie uma senha">
+                            </div>
                         </div>
                         <button type="submit" class="btn" style="width: auto; padding: 10px 20px; margin-top: 5px;">Cadastrar Funcionário</button>
                     </form>
@@ -370,6 +391,8 @@
                                     <th>Unidade</th>
                                     <th>Setor</th>
                                     <th>Telefone</th>
+                                    <th>Login</th>
+                                    <th>Senha</th>
                                     <th class="admin-only-column">Ações</th>
                                 </tr>
                             </thead>
