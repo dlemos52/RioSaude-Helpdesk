@@ -24,7 +24,7 @@
             <p id="texto-aviso-exclusao">Este registro será permanentemente excluído do sistema. Deseja continuar?</p>
             <div class="confirm-actions">
                 <button type="button" class="btn" style="background: #64748b;" onclick="fecharModalExclusao()">Cancelar</button>
-                <button type="button" class="btn" style="background: var(--danger);" onclick="confirmarExclusaoChamado()">Sim, Excluir</button>
+                <button type="button" class="btn" style="background: var(--danger);" onclick="confirmarExclusaoRegistro()">Sim, Excluir</button>
             </div>
         </div>
     </div>
@@ -44,8 +44,20 @@
     <!-- TELA DE LOGIN -->
     <main>
         <div id="login-screen">
-            <div class="login-card">
-                <img src="assets/img/RIOSAUDE.png" alt="Logo Riosaúde" onerror="this.src='https://via.placeholder.com/120?text=RIOSAUDE'">
+            <!-- Tela inicial exclusiva para dispositivos móveis -->
+            <div id="mobile-login-welcome" class="mobile-login-welcome">
+                <img src="assets/img/RIOSAUDE.png" alt="Logo Riosaúde">
+                <button type="button" class="mobile-login-button" onclick="abrirFormularioLogin()">
+                    <span>LOGIN</span>
+                    <span class="mobile-login-arrow">→</span>
+                </button>
+            </div>
+
+            <div id="login-form-container" class="login-card">
+                <div class="login-form-logo-wrap">
+                    <img src="assets/img/RIOSAUDE.png" alt="Logo Riosaúde" class="login-form-logo">
+                </div>
+                <h2>Acesso ao Helpdesk</h2>
                 <form id="loginForm" onsubmit="realizarLogin(event)">
                     <div class="form-group">
                         <label for="loginUnidade">Unidade de Saúde</label>
@@ -62,7 +74,10 @@
                         <label for="senha">Senha</label>
                         <input type="password" id="senha" required placeholder="Senha (123)">
                     </div>
-                    <button type="submit" class="btn" style="width: 100%;">Entrar</button>
+                    <div class="login-action-buttons">
+                        <button type="submit" class="btn login-enter-button">Entrar</button>
+                        <button type="button" class="btn login-back-button" onclick="fecharFormularioLogin()">← Voltar</button>
+                    </div>
                     <div class="credentials-hint">
                         <strong>Acessos de Teste (Senha: 123):</strong><br>
                         • <code>admin</code> (Acesso Total + Dashboard)<br>
@@ -230,6 +245,7 @@
                                     <th>Setor</th>
                                     <th>Responsável</th>
                                     <th>Telefone</th>
+                                    <th class="admin-only-column">Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -354,6 +370,7 @@
                                     <th>Unidade</th>
                                     <th>Setor</th>
                                     <th>Telefone</th>
+                                    <th class="admin-only-column">Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -368,6 +385,7 @@
                     <h3 id="titulo-form-chamado">Abrir Novo Chamado de Suporte</h3>
                     <form id="formChamado" onsubmit="salvarChamadoOuSolucao(event)">
                         <input type="hidden" id="chamadoEditId" value="">
+                        <input type="hidden" id="chamadoModo" value="">
                         <div class="grid-3">
                             <div class="form-group">
                                 <label>Nome do Solicitante</label>

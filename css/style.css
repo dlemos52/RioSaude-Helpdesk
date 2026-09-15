@@ -392,7 +392,7 @@
 
         footer {
             background-color: #171717;
-            color: #cfddf0;
+            color: #94a3b8;
             text-align: center;
             padding: 15px;
             font-size: 0.8rem;
@@ -540,8 +540,335 @@ select:disabled {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 40px);
+    min-height: calc(100vh - 90px);
     background: url('../assets/img/tela-fundo4.jpg') no-repeat center center fixed;
     background-size: cover;
     padding: 20px;
 }       
+
+/* =========================================================
+   MELHORIAS VISUAIS - LOGIN, RESPONSIVIDADE E PERFIS
+   ========================================================= */
+
+/* Fundo institucional em todas as telas internas */
+body {
+    background:
+        linear-gradient(rgba(12, 74, 110, 0.72), rgba(2, 132, 199, 0.62)),
+        url('../assets/img/tela-fundo4.jpg') center center / cover fixed no-repeat;
+    background-attachment: fixed;
+}
+
+#app-screen {
+    background:
+        linear-gradient(rgba(241, 245, 249, 0.86), rgba(226, 232, 240, 0.82)),
+        url('../assets/img/tela-fundo4.jpg') center center / cover fixed no-repeat;
+    background-attachment: fixed;
+}
+
+#app-screen .card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(3px);
+}
+
+/* Logo maior no cabeçalho para todos os perfis */
+header img {
+    width: 64px;
+    height: 64px;
+    padding: 3px;
+}
+
+header .logo-area {
+    gap: 14px;
+}
+
+header h1 {
+    font-size: 1.2rem;
+}
+
+/* Tela inicial de acesso - padrão para desktop e dispositivos móveis */
+#login-screen {
+    min-height: 100vh;
+    padding: 0;
+    background:
+        linear-gradient(rgba(3, 38, 58, 0.30), rgba(2, 132, 199, 0.18)),
+        url('../assets/img/tela-fundo4.jpg') center center / cover no-repeat;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(5px);
+}
+
+/* Padrão de acesso: logo + botão LOGIN antes do formulário. */
+.mobile-login-welcome {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 34px;
+    padding: 28px;
+}
+
+.mobile-login-welcome img {
+    width: min(72vw, 300px);
+    height: min(72vw, 300px);
+    max-width: 300px;
+    max-height: 300px;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.32));
+}
+
+.mobile-login-button {
+    min-width: 210px;
+    padding: 16px 24px;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #0284c7, #0c4a6e);
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.30);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mobile-login-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.36);
+}
+
+.mobile-login-button:active {
+    transform: scale(0.97);
+}
+
+.mobile-login-arrow {
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+/* Botões de CRUD - cores originais */
+.admin-actions {
+    display: flex;
+    gap: 6px;
+    min-width: 150px;
+}
+
+.action-edit,
+.action-delete {
+    border: 0;
+    color: #fff;
+    padding: 6px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.action-edit {
+    background: #0284c7;
+}
+
+.action-delete {
+    background: #dc2626;
+}
+
+.action-edit:hover,
+.action-delete:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+}
+
+/* Formulário permanece oculto até o usuário clicar em LOGIN. */
+#login-form-container {
+    display: none;
+}
+
+#login-form-container.mobile-form-open {
+    display: block;
+}
+
+.mobile-back-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-action-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.login-enter-button,
+.login-back-button {
+    flex: 1 1 0;
+    width: 100% !important;
+    min-height: 46px;
+    padding: 11px 16px !important;
+    border-radius: 8px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.login-enter-button:hover,
+.login-back-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(12, 74, 110, 0.18);
+}
+
+.login-enter-button:active,
+.login-back-button:active {
+    transform: translateY(0);
+}
+
+.login-back-button {
+    background-color: var(--primary-color) !important;
+    color: #fff !important;
+}
+
+.login-back-button:hover {
+    background-color: var(--secondary-color) !important;
+}
+
+@media (max-width: 900px) {
+    /* Tela inicial mobile: somente imagem + logo + botão */
+    #login-screen {
+        min-height: 100vh;
+        padding: 0;
+        background:
+            linear-gradient(rgba(3, 38, 58, 0.30), rgba(2, 132, 199, 0.18)),
+            url('../assets/img/tela-fundo4.jpg') center center / cover no-repeat;
+    }
+
+    .mobile-login-welcome {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 34px;
+        padding: 28px;
+    }
+
+    .mobile-login-welcome img {
+        width: min(72vw, 300px);
+        height: min(72vw, 300px);
+        max-width: 300px;
+        max-height: 300px;
+        object-fit: contain;
+        filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.32));
+    }
+
+    .mobile-login-button {
+        min-width: 210px;
+        padding: 16px 24px;
+        border: 0;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #0284c7, #0c4a6e);
+        color: #fff;
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.30);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .mobile-login-button:active {
+        transform: scale(0.97);
+    }
+
+    .mobile-login-arrow {
+        font-size: 1.35rem;
+        line-height: 1;
+    }
+
+    #login-form-container {
+        display: none;
+        min-height: auto;
+        margin: 20px;
+        max-width: 430px;
+    }
+
+    #login-form-container.mobile-form-open {
+        display: block;
+    }
+
+    #login-form-container .login-form-logo-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
+    #login-form-container .login-form-logo {
+        width: 105px !important;
+        height: 105px !important;
+    }
+
+    header {
+        padding: 10px 12px;
+    }
+
+    header img {
+        width: 58px;
+        height: 58px;
+    }
+
+    header h1 {
+        font-size: 1rem;
+    }
+
+    header small {
+        font-size: 0.72rem;
+    }
+
+    .header-actions {
+        gap: 8px;
+    }
+
+    .container {
+        margin: 12px auto;
+        padding: 0 10px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .admin-actions {
+        flex-direction: column;
+        min-width: 85px;
+    }
+
+    .action-edit,
+    .action-delete {
+        width: 100%;
+    }
+
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+}

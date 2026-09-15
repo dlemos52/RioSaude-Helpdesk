@@ -107,6 +107,9 @@ let currentUser = null;
         let mediaStream = null;
         let termoBuscaGlobal = "";
         let chamadoParaExcluirId = null; // Variável para armazenar o ID alvo da exclusão
+        let registroParaExcluir = null;
+        let inventarioEditIndex = null;
+        let funcionarioEditIndex = null;
 
         let chamados = [
             { id: 1, nome: "Enfermeira Ana Paula", setor: "Enfermagem", telefone: "(21) 97777-1111", unidade: "Hospital Maternidade Carmela Dutra", categoria: "Prontuário Eletrônico", descricao: "Erro ao salvar triagem obstétrica.", status: "aberto", solucao: "", avaliacao: null },
@@ -260,6 +263,20 @@ let currentUser = null;
             }
         }
 
+        function abrirFormularioLogin() {
+            const welcome = document.getElementById('mobile-login-welcome');
+            const formContainer = document.getElementById('login-form-container');
+            if (welcome) welcome.style.display = 'none';
+            if (formContainer) formContainer.classList.add('mobile-form-open');
+        }
+
+        function fecharFormularioLogin() {
+            const welcome = document.getElementById('mobile-login-welcome');
+            const formContainer = document.getElementById('login-form-container');
+            if (formContainer) formContainer.classList.remove('mobile-form-open');
+            if (welcome) welcome.style.display = 'flex';
+        }
+
         function realizarLogin(event) {
             event.preventDefault();
             const usuarioInput = document.getElementById('usuario').value.trim().toLowerCase();
@@ -302,12 +319,16 @@ let currentUser = null;
             document.getElementById('app-screen').style.display = 'none';
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('loginForm').reset();
+            fecharFormularioLogin();
             limparBuscaGlobal();
             cancelarEdicaoOuEncerramento();
             fecharScanner();
         }
 
         function aplicarPermissoesPerfil() {
+            const appScreen = document.getElementById('app-screen');
+            if (appScreen) appScreen.classList.toggle('admin-mode', currentUser === 'admin');
+
             document.getElementById('panel-admin').style.display = (currentUser === 'admin') ? 'block' : 'none';
             document.getElementById('panel-tecnico').style.display = (currentUser === 'tecnico') ? 'block' : 'none';
             document.getElementById('panel-funcionario').style.display = (currentUser === 'funcionario') ? 'block' : 'none';
@@ -394,36 +415,129 @@ let currentUser = null;
             });
         }
 
+        function preencherFormularioInventario(item) {
+            document.getElementById('invPatrimonio').value = item.patrimonio;
+            document.getElementById('invSerial').value = item.serial;
+            document.getElementById('invEquipamento').value = item.equipamento;
+            atualizarMarcas();
+            document.getElementById('invMarca').value = item.marca;
+            document.getElementById('invSetor').value = item.setor;
+            document.getElementById('invResponsavel').value = item.responsavel;
+            document.getElementById('invTelefone').value = item.telefone;
+        }
+
         function cadastrarInventario(event) {
             event.preventDefault();
-            const novoItem = {
-                patrimonio: document.getElementById('invPatrimonio').value,
-                serial: document.getElementById('invSerial').value,
+            if (currentUser !== 'admin' && currentUser !== 'tecnico') {
+                mostrarToast('Acesso restrito', 'Somente perfis autorizados podem cadastrar equipamentos.');
+                return;
+            }
+
+            const item = {
+                patrimonio: document.getElementById('invPatrimonio').value.trim(),
+                serial: document.getElementById('invSerial').value.trim(),
                 equipamento: document.getElementById('invEquipamento').value,
                 marca: document.getElementById('invMarca').value,
                 setor: document.getElementById('invSetor').value,
-                responsavel: document.getElementById('invResponsavel').value,
-                telefone: document.getElementById('invTelefone').value
+                responsavel: document.getElementById('invResponsavel').value.trim(),
+                telefone: document.getElementById('invTelefone').value.trim()
             };
-            inventario.push(novoItem);
+
+            if (inventarioEditIndex !== null && currentUser === 'admin') {
+                inventario[inventarioEditIndex] = item;
+                inventarioEditIndex = null;
+                document.querySelector('#formInventario button[type="submit"]').innerText = 'Cadastrar no Inventário';
+                document.getElementById('formInventario').reset();
+                document.getElementById('invMarca').innerHTML = '<option value="">Selecione primeiro</option>';
+                renderizarTabelas();
+                mostrarToast('Editado', 'Equipamento atualizado com sucesso!');
+                return;
+            }
+
+            inventario.push(item);
             document.getElementById('formInventario').reset();
             document.getElementById('invMarca').innerHTML = '<option value="">Selecione primeiro</option>';
             renderizarTabelas();
             mostrarToast('Sucesso', 'Equipamento cadastrado no inventário!');
         }
 
+        function editarInventario(index) {
+            if (currentUser !== 'admin') {
+                mostrarToast('Acesso restrito', 'A edição do inventário está disponível somente para o administrador.');
+                return;
+            }
+            inventarioEditIndex = index;
+            preencherFormularioInventario(inventario[index]);
+            const btn = document.querySelector('#formInventario button[type="submit"]');
+            btn.innerText = 'Salvar Alterações';
+            rolarParaSecao('modulo-inventario');
+        }
+
+        function excluirInventario(index) {
+            if (currentUser !== 'admin') return;
+            registroParaExcluir = { tipo: 'inventario', index };
+            document.getElementById('texto-aviso-exclusao').innerText =
+                `O equipamento "${inventario[index].equipamento} - ${inventario[index].patrimonio}" será permanentemente excluído do inventário. Deseja continuar?`;
+            document.getElementById('modal-confirmar-exclusao').style.display = 'flex';
+        }
+
+        function preencherFormularioFuncionario(item) {
+            document.getElementById('funcNome').value = item.nome;
+            document.getElementById('funcUnidade').value = item.unidade;
+            document.getElementById('funcSetor').value = item.setor;
+            document.getElementById('funcTelefone').value = item.telefone;
+        }
+
         function cadastrarFuncionario(event) {
             event.preventDefault();
+            if (currentUser !== 'admin' && currentUser !== 'tecnico') {
+                mostrarToast('Acesso restrito', 'Somente perfis autorizados podem cadastrar funcionários.');
+                return;
+            }
+
             const novoFunc = {
-                nome: document.getElementById('funcNome').value,
+                nome: document.getElementById('funcNome').value.trim(),
                 unidade: document.getElementById('funcUnidade').value,
                 setor: document.getElementById('funcSetor').value,
-                telefone: document.getElementById('funcTelefone').value
+                telefone: document.getElementById('funcTelefone').value.trim()
             };
+
+            if (funcionarioEditIndex !== null && currentUser === 'admin') {
+                funcionarios[funcionarioEditIndex] = novoFunc;
+                funcionarioEditIndex = null;
+                document.querySelector('#formFuncionario button[type="submit"]').innerText = 'Cadastrar Funcionário';
+                document.getElementById('formFuncionario').reset();
+                aplicarPermissoesPerfil();
+                renderizarTabelas();
+                mostrarToast('Editado', 'Funcionário atualizado com sucesso!');
+                return;
+            }
+
             funcionarios.push(novoFunc);
             document.getElementById('formFuncionario').reset();
+            aplicarPermissoesPerfil();
             renderizarTabelas();
             mostrarToast('Sucesso', 'Funcionário cadastrado com sucesso!');
+        }
+
+        function editarFuncionario(index) {
+            if (currentUser !== 'admin') {
+                mostrarToast('Acesso restrito', 'A edição de funcionários está disponível somente para o administrador.');
+                return;
+            }
+            funcionarioEditIndex = index;
+            preencherFormularioFuncionario(funcionarios[index]);
+            const btn = document.querySelector('#formFuncionario button[type="submit"]');
+            btn.innerText = 'Salvar Alterações';
+            rolarParaSecao('modulo-cadastro');
+        }
+
+        function excluirFuncionario(index) {
+            if (currentUser !== 'admin') return;
+            registroParaExcluir = { tipo: 'funcionario', index };
+            document.getElementById('texto-aviso-exclusao').innerText =
+                `O funcionário "${funcionarios[index].nome}" será permanentemente excluído do cadastro. Deseja continuar?`;
+            document.getElementById('modal-confirmar-exclusao').style.display = 'flex';
         }
 
         function salvarChamadoOuSolucao(event) {
@@ -440,15 +554,32 @@ let currentUser = null;
             if (editId) {
                 const ch = chamados.find(item => item.id == editId);
                 if (ch) {
-                    const comboSol = document.getElementById('selectSolucaoCombo').value;
-                    const solucaoTexto = comboSol === 'outro' ? document.getElementById('textoSolucao').value.trim() : comboSol;
+                    const modo = document.getElementById('chamadoModo').value;
 
-                    ch.status = 'encerrado';
-                    ch.solucao = solucaoTexto;
+                    if (modo === 'editar') {
+                        ch.nome = nomeSolicitante;
+                        ch.setor = document.getElementById('chamadoSetor').value;
+                        ch.telefone = document.getElementById('chamadoTelefone').value;
+                        ch.unidade = document.getElementById('chamadoUnidade').value;
+                        ch.categoria = document.getElementById('chamadoCategoria').value;
+                        ch.descricao = document.getElementById('selectDescricaoCombo').value === 'outro'
+                            ? document.getElementById('chamadoDescricao').value.trim()
+                            : document.getElementById('selectDescricaoCombo').value;
 
-                    cancelarEdicaoOuEncerramento();
-                    renderizarTabelas();
-                    mostrarToast('Encerrado', `Chamado #${ch.id} encerrado com solução registrada! Status atualizado para verde e satisfação liberada!`);
+                        cancelarEdicaoOuEncerramento();
+                        renderizarTabelas();
+                        mostrarToast('Editado', `Chamado #${ch.id} atualizado com sucesso!`);
+                    } else {
+                        const comboSol = document.getElementById('selectSolucaoCombo').value;
+                        const solucaoTexto = comboSol === 'outro' ? document.getElementById('textoSolucao').value.trim() : comboSol;
+
+                        ch.status = 'encerrado';
+                        ch.solucao = solucaoTexto;
+
+                        cancelarEdicaoOuEncerramento();
+                        renderizarTabelas();
+                        mostrarToast('Encerrado', `Chamado #${ch.id} encerrado com solução registrada! Status atualizado para verde e satisfação liberada!`);
+                    }
                 }
             } else {
                 const comboDesc = document.getElementById('selectDescricaoCombo').value;
@@ -486,6 +617,7 @@ let currentUser = null;
 
             if (novoStatus === 'encerrado') {
                 document.getElementById('chamadoEditId').value = ch.id;
+                document.getElementById('chamadoModo').value = 'encerrar';
                 document.getElementById('titulo-form-chamado').innerText = `Encerrar Chamado #${ch.id} (Informar Solução)`;
                 
                 document.getElementById('chamadoNome').value = ch.nome;
@@ -515,29 +647,98 @@ let currentUser = null;
 
         /* FUNÇÕES DO MODAL DE EXCLUSÃO PERSONALIZADO */
         function excluirChamado(id) {
+            if (currentUser !== 'admin') return;
             chamadoParaExcluirId = id;
-            document.getElementById('texto-aviso-exclusao').innerText = `O chamado #${id} será permanentemente excluído do sistema. Deseja continuar?`;
+            registroParaExcluir = { tipo: 'chamado', id };
+            document.getElementById('texto-aviso-exclusao').innerText =
+                `O chamado #${id} será permanentemente excluído do sistema. Deseja continuar?`;
             document.getElementById('modal-confirmar-exclusao').style.display = 'flex';
         }
 
         function fecharModalExclusao() {
             chamadoParaExcluirId = null;
+            registroParaExcluir = null;
             document.getElementById('modal-confirmar-exclusao').style.display = 'none';
         }
 
-        function confirmarExclusaoChamado() {
-            if (chamadoParaExcluirId !== null) {
-                const idExcluido = chamadoParaExcluirId;
-                chamados = chamados.filter(item => item.id !== idExcluido);
+        function confirmarExclusaoRegistro() {
+            if (!registroParaExcluir || currentUser !== 'admin') {
+                fecharModalExclusao();
+                return;
+            }
+
+            const registro = registroParaExcluir;
+
+            if (registro.tipo === 'chamado') {
+                chamados = chamados.filter(item => item.id !== registro.id);
                 fecharModalExclusao();
                 renderizarTabelas();
-                mostrarToast('Excluído', `Chamado #${idExcluido} removido com sucesso!`);
+                mostrarToast('Excluído', `Chamado #${registro.id} removido com sucesso!`);
+                return;
             }
+
+            if (registro.tipo === 'inventario') {
+                const item = inventario[registro.index];
+                inventario.splice(registro.index, 1);
+                fecharModalExclusao();
+                renderizarTabelas();
+                mostrarToast('Excluído', `Equipamento "${item?.patrimonio || ''}" removido do inventário com sucesso!`);
+                return;
+            }
+
+            if (registro.tipo === 'funcionario') {
+                const item = funcionarios[registro.index];
+                funcionarios.splice(registro.index, 1);
+                fecharModalExclusao();
+                renderizarTabelas();
+                mostrarToast('Excluído', `Funcionário "${item?.nome || ''}" removido com sucesso!`);
+            }
+        }
+
+        function editarChamado(id) {
+            if (currentUser !== 'admin') {
+                mostrarToast('Acesso restrito', 'A edição de chamados está disponível somente para o administrador.');
+                return;
+            }
+
+            const ch = chamados.find(item => item.id === id);
+            if (!ch) return;
+
+            document.getElementById('chamadoEditId').value = ch.id;
+            document.getElementById('chamadoModo').value = 'editar';
+            document.getElementById('titulo-form-chamado').innerText = `Editar Chamado #${ch.id}`;
+
+            document.getElementById('chamadoNome').value = ch.nome;
+            document.getElementById('chamadoSetor').value = ch.setor;
+            document.getElementById('chamadoTelefone').value = ch.telefone;
+            document.getElementById('chamadoUnidade').value = ch.unidade;
+            document.getElementById('chamadoCategoria').value = ch.categoria;
+
+            const descricaoCombo = document.getElementById('selectDescricaoCombo');
+            const descricaoOpcao = [...descricaoCombo.options].some(o => o.value === ch.descricao && o.value !== 'outro');
+
+            if (descricaoOpcao) {
+                descricaoCombo.value = ch.descricao;
+                document.getElementById('chamadoDescricao').style.display = 'none';
+            } else {
+                descricaoCombo.value = 'outro';
+                document.getElementById('chamadoDescricao').style.display = 'block';
+                document.getElementById('chamadoDescricao').value = ch.descricao;
+            }
+
+            document.getElementById('bloco-solucao-container').style.display = 'none';
+            document.getElementById('selectSolucaoCombo').required = false;
+            document.getElementById('btn-submit-chamado').innerText = 'Salvar Alterações';
+            document.getElementById('btn-submit-chamado').style.backgroundColor = 'var(--primary-color)';
+            document.getElementById('btn-cancelar-edicao').style.display = 'inline-block';
+
+            rolarParaSecao('modulo-abertura');
         }
 
         function cancelarEdicaoOuEncerramento() {
             document.getElementById('formChamado').reset();
             document.getElementById('chamadoEditId').value = '';
+            document.getElementById('chamadoModo').value = '';
             document.getElementById('titulo-form-chamado').innerText = 'Abrir Novo Chamado de Suporte';
             document.getElementById('selectDescricaoCombo').value = '';
             document.getElementById('chamadoDescricao').style.display = 'none';
@@ -564,17 +765,30 @@ let currentUser = null;
 
             const tbodyInv = document.querySelector('#tabelaInventario tbody');
             tbodyInv.innerHTML = '';
-            inventario.forEach(item => {
+            inventario.forEach((item, index) => {
+                const acoes = currentUser === 'admin'
+                    ? `<div class="admin-actions">
+                        <button type="button" class="action-edit" onclick="editarInventario(${index})">Editar</button>
+                        <button type="button" class="action-delete" onclick="excluirInventario(${index})">Excluir</button>
+                       </div>`
+                    : '';
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${item.patrimonio}</td><td>${item.serial}</td><td>${item.equipamento}</td><td>${item.marca}</td><td>${item.setor}</td><td>${item.responsavel}</td><td style="white-space: nowrap; font-size: 0.8rem;">${item.telefone}</td>`;
+                tr.innerHTML = `<td>${item.patrimonio}</td><td>${item.serial}</td><td>${item.equipamento}</td><td>${item.marca}</td><td>${item.setor}</td><td>${item.responsavel}</td><td style="white-space: nowrap; font-size: 0.8rem;">${item.telefone}</td><td class="admin-only-cell">${acoes}</td>`;
                 tbodyInv.appendChild(tr);
             });
 
             const tbodyFunc = document.querySelector('#tabelaFuncionarios tbody');
             tbodyFunc.innerHTML = '';
             funcionariosDaUnidadeAtual().forEach(item => {
+                const originalIndex = funcionarios.indexOf(item);
+                const acoes = currentUser === 'admin'
+                    ? `<div class="admin-actions">
+                        <button type="button" class="action-edit" onclick="editarFuncionario(${originalIndex})">Editar</button>
+                        <button type="button" class="action-delete" onclick="excluirFuncionario(${originalIndex})">Excluir</button>
+                       </div>`
+                    : '';
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${item.nome}</td><td>${item.unidade}</td><td>${item.setor}</td><td style="white-space: nowrap; font-size: 0.8rem;">${item.telefone}</td>`;
+                tr.innerHTML = `<td>${item.nome}</td><td>${item.unidade}</td><td>${item.setor}</td><td style="white-space: nowrap; font-size: 0.8rem;">${item.telefone}</td><td class="admin-only-cell">${acoes}</td>`;
                 tbodyFunc.appendChild(tr);
             });
 
@@ -609,7 +823,7 @@ let currentUser = null;
                 }
 
                 let acoesHtml = '';
-                let botaoExcluirHtml = `<button type="button" onclick="excluirChamado(${ch.id})" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; display: block; margin-top: 4px; width: 100%;">Excluir</button>`;
+                let botaoExcluirHtml = `<button type="button" class="action-delete" onclick="excluirChamado(${ch.id})" style="display: block; margin-top: 4px; width: 100%;">Excluir</button>`;
 
                 if (currentUser === 'admin' || currentUser === 'tecnico') {
                     let seletorStatus = `
@@ -628,7 +842,10 @@ let currentUser = null;
                             statusAvaliacaoAdmin = `<span style="font-size: 0.75rem; color: #64748b; display: block; margin-top: 2px;">Aguardando avaliação</span>`;
                         }
                     }
-                    acoesHtml = seletorStatus + statusAvaliacaoAdmin + (currentUser === 'admin' ? botaoExcluirHtml : '');
+                    const botoesAdmin = currentUser === 'admin'
+                        ? `<button type="button" class="action-edit" onclick="editarChamado(${ch.id})">Editar</button>${botaoExcluirHtml}`
+                        : '';
+                    acoesHtml = seletorStatus + statusAvaliacaoAdmin + botoesAdmin;
 
                 } else {
                     if (ch.status === 'encerrado') {
