@@ -232,8 +232,21 @@ let currentEmployee = null;
 
         function rolarParaSecao(id) {
             const el = document.getElementById(id);
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+                setTimeout(salvarSessao, 350);
+            }
         }
+
+        let ultimoSalvamentoScroll = 0;
+        window.addEventListener('scroll', function() {
+            if (!currentUser) return;
+            const agora = Date.now();
+            if (agora - ultimoSalvamentoScroll < 300) return;
+            ultimoSalvamentoScroll = agora;
+            salvarSessao();
+        }, { passive: true });
+
 
         function executarBuscaGlobal() {
             const val = document.getElementById('globalSearchInput').value.trim();
@@ -290,6 +303,70 @@ let currentEmployee = null;
             if (welcome) welcome.style.display = 'flex';
         }
 
+        const STORAGE_SESSAO = 'helpdeskRioSaudeSessao';
+
+        function salvarSessao() {
+            if (!currentUser || !currentUnit) return;
+            const sessao = {
+                currentUser,
+                currentUnit,
+                employeeLogin: currentEmployee?.login || null,
+                scrollY: window.scrollY || 0,
+                pagina: document.querySelector('.card:target')?.id || null
+            };
+            localStorage.setItem(STORAGE_SESSAO, JSON.stringify(sessao));
+        }
+
+        function limparSessaoSalva() {
+            localStorage.removeItem(STORAGE_SESSAO);
+        }
+
+        function restaurarSessao() {
+            try {
+                const salvo = localStorage.getItem(STORAGE_SESSAO);
+                if (!salvo) return false;
+
+                const sessao = JSON.parse(salvo);
+                if (!sessao?.currentUser || !sessao?.currentUnit) return false;
+
+                currentUser = sessao.currentUser;
+                currentUnit = sessao.currentUnit;
+                currentEmployee = null;
+
+                if (currentUser === 'funcionario') {
+                    currentEmployee = funcionarios.find(f =>
+                        f.login && sessao.employeeLogin &&
+                        f.login.toLowerCase() === sessao.employeeLogin.toLowerCase()
+                    ) || null;
+                    if (!currentEmployee) {
+                        limparSessaoSalva();
+                        currentUser = null;
+                        currentUnit = null;
+                        return false;
+                    }
+                }
+
+                const loginScreen = document.getElementById('login-screen');
+                const appScreen = document.getElementById('app-screen');
+                if (loginScreen) loginScreen.style.display = 'none';
+                if (appScreen) appScreen.style.display = 'flex';
+
+                aplicarPermissoesPerfil();
+                construirMenuMobileDropdown();
+                renderizarTabelas();
+
+                // Restaura exatamente a posição em que o usuário estava antes do F5.
+                requestAnimationFrame(() => {
+                    window.scrollTo({ top: Number(sessao.scrollY) || 0, behavior: 'auto' });
+                });
+                return true;
+            } catch (erro) {
+                console.warn('Não foi possível restaurar a sessão:', erro);
+                limparSessaoSalva();
+                return false;
+            }
+        }
+
         function realizarLogin(event) {
             event.preventDefault();
             const usuarioInput = document.getElementById('usuario').value.trim().toLowerCase();
@@ -341,6 +418,7 @@ let currentEmployee = null;
                 aplicarPermissoesPerfil();
                 construirMenuMobileDropdown();
                 renderizarTabelas();
+                salvarSessao();
                 mostrarToast('Bem-vindo!', `Sessão iniciada como ${currentUser.toUpperCase()} — ${currentUnit === '__TODAS__' ? 'Todas as unidades' : currentUnit}`);
             } else {
                 mostrarToast('Erro de Login', 'Usuário ou senha não reconhecidos. Use um acesso administrativo ou um login cadastrado.');
@@ -348,6 +426,7 @@ let currentEmployee = null;
         }
 
         function realizarLogout() {
+            limparSessaoSalva();
             currentUser = null;
             currentEmployee = null;
             currentUnit = null;
@@ -978,3 +1057,7 @@ let currentEmployee = null;
                 mediaStream = null;
             }
         }
+
+
+// Restaura automaticamente a sessão e a posição da página após F5/recarregamento.
+setTimeout(() => restaurarSessao(), 0);
