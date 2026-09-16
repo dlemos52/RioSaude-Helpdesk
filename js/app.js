@@ -292,14 +292,14 @@ let currentEmployee = null;
         }
 
         function abrirFormularioLogin() {
-            const welcome = document.getElementById('mobile-login-welcome');
+            const welcome = document.getElementById('login-welcome-screen');
             const formContainer = document.getElementById('login-form-container');
             if (welcome) welcome.style.display = 'none';
             if (formContainer) formContainer.classList.add('mobile-form-open');
         }
 
         function fecharFormularioLogin() {
-            const welcome = document.getElementById('mobile-login-welcome');
+            const welcome = document.getElementById('login-welcome-screen');
             const formContainer = document.getElementById('login-form-container');
             if (formContainer) formContainer.classList.remove('mobile-form-open');
             if (welcome) welcome.style.display = 'flex';
@@ -656,22 +656,10 @@ let currentEmployee = null;
                 modCad.style.display = 'block';
             }
 
-            let nomePerfil = 'Administrador';
-            let nomeUsuario = 'Administrador';
-            if (currentUser === 'tecnico') {
-                nomePerfil = 'Técnico';
-                nomeUsuario = 'Técnico';
-            }
-            if (currentUser === 'funcionario') {
-                nomePerfil = 'Funcionário';
-                nomeUsuario = currentEmployee?.nome || 'Funcionário';
-            }
+            let nomePerfil = 'Admin';
+            if (currentUser === 'tecnico') nomePerfil = 'Técnico';
+            if (currentUser === 'funcionario') nomePerfil = 'Funcionário';
             document.getElementById('user-display').innerText = `Perfil: ${nomePerfil}`;
-
-            const welcomeUser = document.getElementById('welcome-user');
-            if (welcomeUser) {
-                welcomeUser.textContent = `Bem-vindo, ${nomeUsuario}!`;
-            }
 
             const unidadeChamado = document.getElementById('chamadoUnidade');
             if (unidadeChamado) {

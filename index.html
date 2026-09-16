@@ -54,52 +54,71 @@
         </div>
     </div>
 
-    <!-- TELA DE LOGIN -->
-    <main>
-        <div id="login-screen">
-            <!-- Tela inicial exclusiva para dispositivos móveis -->
-            <div id="mobile-login-welcome" class="mobile-login-welcome">
-                <img src="assets/img/RIOSAUDE.png" alt="Logo Riosaúde">
-                <button type="button" class="mobile-login-button" onclick="abrirFormularioLogin()">
-                    <span>LOGIN</span>
-                    <span class="mobile-login-arrow">→</span>
+    <!-- TELA DE LOGIN RESPONSIVA -->
+    <div id="login-screen">
+        <div class="login-animated-bg" aria-hidden="true">
+            <span class="login-orb orb-1"></span><span class="login-orb orb-2"></span><span class="login-orb orb-3"></span>
+            <span class="login-particle particle-1">+</span><span class="login-particle particle-2">✚</span>
+            <span class="login-particle particle-3">•</span><span class="login-particle particle-4">+</span>
+        </div>
+
+        <!-- Tela inicial: apenas um botão de Login -->
+        <section id="login-welcome-screen" class="login-welcome-screen">
+            <div class="welcome-panel">
+                <div class="welcome-logo-wrap"><img src="assets/img/RIOSAUDE.png" alt="Logo RIOSAÚDE"></div>
+                <span class="showcase-badge">RIO SAÚDE • HELPDESK</span>
+                <h1>Bem-vindo ao<br><strong>Helpdesk RIO Saúde</strong></h1>
+                <p>Atendimento, chamados e suporte técnico das unidades de saúde em um único lugar.</p>
+                <div class="showcase-status"><span class="status-dot"></span><span>Sistema de atendimento online</span></div>
+                <button type="button" class="welcome-login-button" onclick="abrirFormularioLogin()">
+                    <span>Entrar no sistema</span><span>→</span>
                 </button>
             </div>
+        </section>
 
-            <div id="login-form-container" class="login-card">
-                <div class="login-form-logo-wrap">
-                    <img src="assets/img/RIOSAUDE.png" alt="Logo Riosaúde" class="login-form-logo">
+        <!-- Formulário aparece somente após clicar em Entrar -->
+        <div class="login-animated-shell login-form-shell" id="login-form-container">
+            <section class="login-showcase login-showcase-form">
+                <div class="showcase-glow"></div>
+                <div class="showcase-content">
+                    <div class="showcase-logo-wrap"><img src="assets/img/RIOSAUDE.png" alt="Logo RIOSAÚDE" class="showcase-logo"></div>
+                    <span class="showcase-badge">RIO SAÚDE • HELPDESK</span>
+                    <h1>Bem-vindo ao<br><strong>Helpdesk RIO Saúde</strong></h1>
+                    <p>Atendimento, chamados e suporte técnico das unidades de saúde em um único lugar.</p>
+                    <div class="showcase-status"><span class="status-dot"></span><span>Sistema de atendimento online</span></div>
                 </div>
-                <h2>Acesso ao Helpdesk</h2>
+            </section>
+            <section class="login-card login-animated-card">
+                <div class="login-card-top">
+                    <div class="login-form-logo-wrap"><img src="assets/img/RIOSAUDE.png" alt="Logo Riosaúde" class="login-form-logo"></div>
+                    <span class="login-eyebrow">ACESSO SEGURO</span>
+                    <h2>Entrar no sistema</h2>
+                    <p>Informe seus dados para continuar.</p>
+                </div>
                 <form id="loginForm" onsubmit="realizarLogin(event)">
-                    <div class="form-group">
+                    <div class="form-group animated-field">
                         <label for="loginUnidade">Unidade de Saúde</label>
-                        <select id="loginUnidade" required>
-                            <option value="">Selecione sua unidade...</option>
-                        </select>
-                        <small style="display:block; margin-top:5px; color:#64748b;">A unidade selecionada será usada para separar os chamados, funcionários e informações do atendimento.</small>
+                        <div class="login-input-wrap select-wrap"><span class="input-icon">⌂</span><select id="loginUnidade" required><option value="">Selecione sua unidade...</option></select></div>
+                        <small class="login-help">Selecione a unidade onde você atua.</small>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group animated-field">
                         <label for="usuario">Usuário</label>
-                        <input type="text" id="usuario" required placeholder="admin, tecnico ou funcionario">
+                        <div class="login-input-wrap"><span class="input-icon">♙</span><input type="text" id="usuario" required placeholder="Digite seu usuário" autocomplete="username"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group animated-field">
                         <label for="senha">Senha</label>
-                        <input type="password" id="senha" required placeholder="Senha (123)">
+                        <div class="login-input-wrap"><span class="input-icon">⌑</span><input type="password" id="senha" required placeholder="Digite sua senha" autocomplete="current-password"></div>
                     </div>
                     <div class="login-action-buttons">
-                        <button type="submit" class="btn login-enter-button">Entrar</button>
-                        <button type="button" class="btn login-back-button" onclick="fecharFormularioLogin()">← Voltar</button>
+                        <button type="submit" class="btn login-enter-button"><span>Entrar</span><span class="login-arrow">→</span></button>
+                        <button type="button" class="btn login-back-button" onclick="fecharFormularioLogin()">Voltar</button>
                     </div>
-                    <div class="credentials-hint">
-                        <strong>Acessos de Teste (Senha: 123):</strong><br>
-                        • <code>admin</code> (Acesso Total + Dashboard)<br>
-                        • <code>tecnico</code> (Chamados, Cadastros e Inventário)<br>
-                        • <code>funcionario</code> (Abertura e Consulta)
-                    </div>
+                    <div class="credentials-hint"><strong>Acessos de teste</strong><span>Senha padrão: <code>123</code></span><span><b>admin</b> • acesso total</span><span><b>tecnico</b> • suporte técnico</span><span>Funcionários • login cadastrado</span></div>
                 </form>
-            </div>
+                <div class="login-footer-line"><span class="secure-icon">✓</span> Ambiente protegido do Helpdesk RIO Saúde</div>
+            </section>
         </div>
+    </div>
 
         <!-- TELA DO SISTEMA INTERNO -->
         <div id="app-screen">
@@ -111,12 +130,6 @@
                         <small>Riosaúde - Gestão de Atendimento</small>
                     </div>
                 </div>
-
-                <div class="header-welcome" id="header-welcome" aria-live="polite">
-                    <span class="welcome-icon">👋</span>
-                    <span id="welcome-user">Bem-vindo!</span>
-                </div>
-
                 <div class="header-actions">
                     <div class="header-search-box">
                         <input type="text" id="globalSearchInput" placeholder="Nome ou Nº Chamado..." onkeydown="if(event.key === 'Enter') executarBuscaGlobal()">
