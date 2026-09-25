@@ -221,6 +221,7 @@
                                 <label>Setor</label>
                                 <select id="invSetor" required>
                                     <option value="">Setor</option>
+                                    <option value="TI">TI</option>
                                     <option value="Recepção da Emergência">Recepção Emergência</option>
                                     <option value="NIR">NIR</option>
                                     <option value="Diretoria">Diretoria</option>
@@ -287,7 +288,7 @@
                     </div>
                 </div>
 
-                <!-- MÓDULO: CADASTRO DE FUNCIONÁRIOS -->
+                <!-- MÓDULO: CADASTRO DE FUNCIONÁRIOS / COLABORADORES -->
                 <div id="modulo-cadastro" class="card">
                     <h3>Cadastro de Funcionários / Colaboradores</h3>
                     <form id="formFuncionario" onsubmit="cadastrarFuncionario(event)">
@@ -295,6 +296,14 @@
                             <div class="form-group">
                                 <label>Nome Completo</label>
                                 <input type="text" id="funcNome" required placeholder="Ex: Dr. Carlos Silva">
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo de Colaborador</label>
+                                <select id="funcTipo" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="Funcionário">Funcionário</option>
+                                    <option value="Técnico">Técnico</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Unidade de Saúde</label>
@@ -365,10 +374,13 @@
                                     </optgroup>
                                 </select>
                             </div>
+                        </div>
+                        <div class="grid-3">
                             <div class="form-group">
                                 <label>Setor</label>
                                 <select id="funcSetor" required>
                                     <option value="">Setor</option>
+                                    <option value="TI">TI</option>
                                     <option value="Recepção da Emergência">Recepção Emergência</option>
                                     <option value="NIR">NIR</option>
                                     <option value="Diretoria">Diretoria</option>
@@ -384,8 +396,6 @@
                                     <option value="Ambulatório">Ambulatório</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid-2">
                             <div class="form-group">
                                 <label>Telefone</label>
                                 <input type="text" id="funcTelefone" required placeholder="(21) 99999-9999">
@@ -394,6 +404,8 @@
                                 <label>Login</label>
                                 <input type="text" id="funcLogin" required autocomplete="username" placeholder="Ex: carlos.silva">
                             </div>
+                        </div>
+                        <div class="grid-2">
                             <div class="form-group">
                                 <label>Senha</label>
                                 <input type="password" id="funcSenha" required autocomplete="new-password" placeholder="Crie uma senha">
@@ -407,6 +419,7 @@
                             <thead>
                                 <tr>
                                     <th>Nome</th>
+                                    <th>Tipo</th>
                                     <th>Unidade</th>
                                     <th>Setor</th>
                                     <th>Telefone</th>
@@ -437,6 +450,7 @@
                                 <label>Setor</label>
                                 <select id="chamadoSetor" required>
                                     <option value="">Setor</option>
+                                    <option value="TI">TI</option>
                                     <option value="Recepção da Emergência">Recepção Emergência</option>
                                     <option value="NIR">NIR</option>
                                     <option value="Diretoria">Diretoria</option>

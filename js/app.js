@@ -128,11 +128,13 @@ let chamados = [
     { id: 2, nome: "Dr. Roberto Mendes", login: "roberto.mendes", setor: "Recepção da Emergência", telefone: "(21) 96666-2222", unidade: "Hospital Municipal Souza Aguiar", categoria: "Rede / Internet", descricao: "Queda de conexão recorrente no posto.", status: "andamento", solucao: "", avaliacao: null },
     { id: 3, nome: "Carlos Alberto", login: "carlos.alberto", setor: "Diretoria", telefone: "(21) 98888-3333", unidade: "Hospital Municipal Miguel Couto", categoria: "Equipamento Médico", descricao: "Manutenção preventiva em monitor.", status: "encerrado", solucao: "Substituição do cabo de força danificado e reconfiguração de IP.", avaliacao: "feliz" }
 ];
+
 let funcionarios = [
-    { nome: "Enfermeira Ana Paula", unidade: "Hospital Maternidade Carmela Dutra", setor: "Enfermagem", telefone: "(21) 97777-1111", login: "ana.paula", senha: "123" },
-    { nome: "Dr. Roberto Mendes", unidade: "Hospital Municipal Souza Aguiar", setor: "Recepção da Emergência", telefone: "(21) 96666-2222", login: "roberto.mendes", senha: "123" },
-    { nome: "Carlos Alberto", unidade: "Hospital Municipal Miguel Couto", setor: "Diretoria", telefone: "(21) 98888-3333", login: "carlos.alberto", senha: "123" }
+    { nome: "Enfermeira Ana Paula", tipo: "Funcionário", unidade: "Hospital Maternidade Carmela Dutra", setor: "Enfermagem", telefone: "(21) 97777-1111", login: "ana.paula", senha: "123" },
+    { nome: "Dr. Roberto Mendes", tipo: "Funcionário", unidade: "Hospital Municipal Souza Aguiar", setor: "Recepção da Emergência", telefone: "(21) 96666-2222", login: "roberto.mendes", senha: "123" },
+    { nome: "Carlos Alberto", tipo: "Técnico", unidade: "Hospital Municipal Miguel Couto", setor: "Diretoria", telefone: "(21) 98888-3333", login: "carlos.alberto", senha: "123" }
 ];
+
 let inventario = [
     { patrimonio: "P01", serial: "S1234", equipamento: "Desktop", marca: "Dell", setor: "Recepção da Emergência", responsavel: "Carlos Alberto", telefone: "(21) 98888-1111" }
 ];
@@ -344,6 +346,7 @@ const STORAGE_INVENTARIO = 'helpdeskRioSaudeInventario';
 const STORAGE_DADOS_SESSAO = 'helpdeskRioSaudeDadosSessao';
 
 const DB_NOME = 'HelpdeskRIOSaudeDB';
+const DB_STORE = 'dadosStore';
 const DB_VERSAO = 1;
 let bancoDados = null;
 
@@ -609,12 +612,18 @@ function realizarLogin(event) {
             mostrarToast('Atenção', 'Senha incorreta. Verifique a senha cadastrada para este usuário.');
             return;
         }
-        if (funcionario.unidade !== unidadeInput) {
-            mostrarToast('Unidade incorreta', `Este usuário está cadastrado na unidade ${funcionario.unidade}. Selecione a unidade correta para entrar.`);
-            return;
+        
+        // Verifica se o colaborador cadastrado possui o tipo Técnico
+        if (funcionario.tipo === 'Técnico') {
+            perfil = 'tecnico';
+        } else {
+            if (funcionario.unidade !== unidadeInput) {
+                mostrarToast('Unidade incorreta', `Este usuário está cadastrado na unidade ${funcionario.unidade}. Selecione a unidade correta para entrar.`);
+                return;
+            }
+            perfil = 'funcionario';
+            currentEmployee = funcionario;
         }
-        perfil = 'funcionario';
-        currentEmployee = funcionario;
     }
 
     if (perfil) {
@@ -650,7 +659,7 @@ function realizarLogout() {
 
 function aplicarPermissoesPerfil() {
     const appScreen = document.getElementById('app-screen');
-    if (appScreen) appScreen.classList.toggle('admin-mode', currentUser === 'admin');
+    if (appScreen) appScreen.classList.toggle('admin-mode', currentUser === 'admin' || currentUser === 'tecnico');
 
     document.getElementById('panel-admin').style.display = (currentUser === 'admin') ? 'block' : 'none';
     document.getElementById('panel-tecnico').style.display = (currentUser === 'tecnico') ? 'block' : 'none';
@@ -659,6 +668,7 @@ function aplicarPermissoesPerfil() {
     const modInv = document.getElementById('modulo-inventario');
     const modCad = document.getElementById('modulo-cadastro');
 
+    // Libera os módulos de inventário e cadastro para Administrador e Técnico
     if (currentUser === 'funcionario') {
         if (modInv) modInv.style.display = 'none';
         if (modCad) modCad.style.display = 'none';
@@ -675,11 +685,11 @@ function aplicarPermissoesPerfil() {
 
     const unidadeChamado = document.getElementById('chamadoUnidade');
     if (unidadeChamado) {
-        unidadeChamado.disabled = currentUnit !== '__TODAS__';
-        if (currentUnit !== '__TODAS__') unidadeChamado.value = currentUnit;
+        unidadeChamado.disabled = currentUnit !== '__TODAS__' && currentUser !== 'admin' && currentUser !== 'tecnico';
+        if (currentUnit !== '__TODAS__' && currentUser === 'funcionario') unidadeChamado.value = currentUnit;
     }
     const unidadeFuncionario = document.getElementById('funcUnidade');
-    if (unidadeFuncionario && currentUnit !== '__TODAS__') {
+    if (unidadeFuncionario && currentUnit !== '__TODAS__' && currentUser === 'funcionario') {
         unidadeFuncionario.value = currentUnit;
         unidadeFuncionario.disabled = true;
     } else if (unidadeFuncionario) {
@@ -694,7 +704,7 @@ function avaliarChamado(id, tipoAvaliacao) {
     const chamado = chamados.find(c => c.id === Number(id));
     if (!chamado) return;
 
-    chamado.avaliacao = tipoAvaliacao; // 'feliz' ou 'triste'
+    chamado.avaliacao = tipoAvaliacao; 
     salvarDadosSistema();
     renderizarTabelas();
     salvarSessao();
@@ -734,7 +744,6 @@ function atualizarDashboardKPIs() {
     const elFechados = document.getElementById('kpi-chamados-fechados');
     if (elFechados) elFechados.innerText = fechados;
 
-    // Cálculo dinâmico e preciso da Satisfação baseado na votação real dos chamados encerrados
     let totalAvaliados = 0;
     let avaliacoesPositivas = 0;
 
@@ -782,7 +791,7 @@ function renderizarTabelas() {
         });
     }
 
-    // 2. Renderizar Funcionários
+    // 2. Renderizar Funcionários / Colaboradores
     const corpoFuncionarios = document.querySelector('#tabelaFuncionarios tbody');
     if (corpoFuncionarios) {
         corpoFuncionarios.innerHTML = '';
@@ -790,6 +799,7 @@ function renderizarTabelas() {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${func.nome}</td>
+                <td><span style="font-weight:bold; color: ${func.tipo === 'Técnico' ? 'var(--warning)' : 'var(--primary)'};">${func.tipo || 'Funcionário'}</span></td>
                 <td>${func.unidade}</td>
                 <td>${func.setor}</td>
                 <td>${func.telefone}</td>
@@ -804,7 +814,7 @@ function renderizarTabelas() {
         });
     }
 
-    // 3. Renderizar Chamados (Com botões interativos de Pesquisa de Satisfação na visão do funcionário ou ícone visível para Admin/Técnico)
+    // 3. Renderizar Chamados
     const corpoChamados = document.querySelector('#tabelaChamados tbody');
     if (corpoChamados) {
         corpoChamados.innerHTML = '';
@@ -823,17 +833,16 @@ function renderizarTabelas() {
             const tr = document.createElement('tr');
             
             let statusTexto = 'Aberto';
-            let corBadge = '#ef4444'; // Vermelho
+            let corBadge = '#ef4444';
 
             if (chamado.status === 'andamento') {
                 statusTexto = 'Em Andamento (A caminho)';
-                corBadge = '#f97316'; // Laranja
+                corBadge = '#f97316';
             } else if (chamado.status === 'encerrado' || chamado.status === 'fechado') {
                 statusTexto = 'Fechado / Encerrado';
-                corBadge = '#22c55e'; // Verde
+                corBadge = '#22c55e';
             }
 
-            // Lógica de Renderização da Avaliação de Satisfação
             let htmlAvaliacao = '';
             const isFechado = (chamado.status === 'encerrado' || chamado.status === 'fechado');
 
@@ -843,7 +852,6 @@ function renderizarTabelas() {
                 } else if (chamado.avaliacao === 'triste') {
                     htmlAvaliacao = '<br><span style="color:#ef4444; font-weight:bold;">Avaliação: 😞 Insatisfeito (Triste)</span>';
                 } else {
-                    // Se estiver fechado e for a visão do funcionário dono do chamado, exibe os botões de votação interativos
                     const eDonoDoChamado = currentUser === 'funcionario';
                     if (eDonoDoChamado) {
                         htmlAvaliacao = `
@@ -879,12 +887,13 @@ function renderizarTabelas() {
 }
 
 // ==========================================
-// CADASTRO DE FUNCIONÁRIO
+// CADASTRO DE FUNCIONÁRIO / COLABORADOR
 // ==========================================
 function cadastrarFuncionario(event) {
     event.preventDefault();
 
     const nome = document.getElementById('funcNome').value.trim();
+    const tipo = document.getElementById('funcTipo').value;
     const unidade = document.getElementById('funcUnidade').value;
     const setor = document.getElementById('funcSetor').value;
     const telefone = document.getElementById('funcTelefone').value.trim();
@@ -892,17 +901,17 @@ function cadastrarFuncionario(event) {
     const senha = document.getElementById('funcSenha').value;
 
     if (funcionarioEditIndex !== null && funcionarioEditIndex >= 0) {
-        funcionarios[funcionarioEditIndex] = { nome, unidade, setor, telefone, login, senha };
+        funcionarios[funcionarioEditIndex] = { nome, tipo, unidade, setor, telefone, login, senha };
         funcionarioEditIndex = null;
-        mostrarToast('Sucesso', 'Funcionário atualizado com êxito!');
+        mostrarToast('Sucesso', 'Colaborador atualizado com êxito!');
     } else {
         const existe = funcionarios.some(f => f.login && f.login.toLowerCase() === login);
         if (existe) {
-            mostrarToast('Atenção', 'Já existe um funcionário cadastrado com este login.');
+            mostrarToast('Atenção', 'Já existe um colaborador cadastrado com este login.');
             return;
         }
-        funcionarios.push({ nome, unidade, setor, telefone, login, senha });
-        mostrarToast('Sucesso', 'Funcionário cadastrado com êxito!');
+        funcionarios.push({ nome, tipo, unidade, setor, telefone, login, senha });
+        mostrarToast('Sucesso', 'Colaborador cadastrado com êxito!');
     }
 
     document.getElementById('formFuncionario').reset();
@@ -983,7 +992,7 @@ function salvarChamadoOuSolucao(event) {
                 chamado.solucao = solucao || 'Atendimento concluído.';
             } else {
                 chamado.solucao = '';
-                chamado.avaliacao = null; // Reseta se reabrir o chamado
+                chamado.avaliacao = null;
             }
             mostrarToast('Sucesso', `Chamado #${chamado.id} atualizado com êxito!`);
         }
@@ -1058,7 +1067,7 @@ function cancelarEdicaoOuEncerramento() {
 }
 
 // ==========================================
-// AÇÕES DE EDIÇÃO E EXCLUSÃO (BOTÕES/ÍCONES)
+// AÇÕES DE EDIÇÃO E EXCLUSÃO
 // ==========================================
 
 function prepararEdicaoInventario(index) {
@@ -1103,6 +1112,8 @@ function prepararEdicaoFuncionario(index) {
     
     const inputNome = document.getElementById('funcNome');
     if (inputNome) inputNome.value = func.nome || '';
+    const inputTipo = document.getElementById('funcTipo');
+    if (inputTipo) inputTipo.value = func.tipo || 'Funcionário';
     const inputUnid = document.getElementById('funcUnidade');
     if (inputUnid) inputUnid.value = func.unidade || '';
     const inputSetor = document.getElementById('funcSetor');
@@ -1121,7 +1132,7 @@ function solicitarExclusaoFuncionario(index) {
     tipoExclusao = 'funcionario';
     registroParaExcluir = index;
     const aviso = document.getElementById('texto-aviso-exclusao');
-    if (aviso) aviso.innerText = "Este funcionário será permanentemente excluído do sistema. Deseja continuar?";
+    if (aviso) aviso.innerText = "Este colaborador será permanentemente excluído do sistema. Deseja continuar?";
     const modal = document.getElementById('modal-confirmar-exclusao');
     if (modal) modal.style.display = 'flex';
 }
@@ -1243,7 +1254,7 @@ function confirmarExclusaoRegistro() {
         mostrarToast('Sucesso', 'Equipamento excluído do inventário.');
     } else if (tipoExclusao === 'funcionario') {
         funcionarios.splice(registroParaExcluir, 1);
-        mostrarToast('Sucesso', 'Funcionário excluído do sistema.');
+        mostrarToast('Sucesso', 'Colaborador excluído do sistema.');
     } else if (tipoExclusao === 'chamado') {
         chamados = chamados.filter(c => c.id !== registroParaExcluir);
         mostrarToast('Sucesso', 'Chamado excluído com sucesso.');
